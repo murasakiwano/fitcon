@@ -8,14 +8,17 @@ import (
 )
 
 func main() {
+}
+
+func main1() {
 	people := []FitConner{
 		{
 			Name: "Monkey D. Luffy",
-			Meta1: Metas{
+			Goal1: Goals{
 				FatPercentage: "*",
 				LeanMass:      "*",
 			},
-			Meta2: Metas{
+			Goal2: Goals{
 				VisceralFat:   "*",
 				FatPercentage: "*",
 				LeanMass:      "*",
@@ -23,11 +26,11 @@ func main() {
 		},
 		{
 			Name: "Roronoa Zoro",
-			Meta1: Metas{
+			Goal1: Goals{
 				FatPercentage: "*",
 				LeanMass:      "*",
 			},
-			Meta2: Metas{
+			Goal2: Goals{
 				VisceralFat:   "*",
 				FatPercentage: "*",
 				LeanMass:      "*",
