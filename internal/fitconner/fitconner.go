@@ -1,9 +1,12 @@
 package fitconner
 
 type FitConner struct {
-	Name  string
-	Goal1 Goals
-	Goal2 Goals
+	Goal1      Goals
+	Goal2      Goals
+	TeamName   string
+	Name       string
+	TeamNumber int
+	Register   string
 }
 
 type Goals struct {

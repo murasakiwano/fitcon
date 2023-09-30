@@ -2,7 +2,7 @@ package server
 
 import (
 	"html/template"
-	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -27,14 +27,14 @@ func serveTemplate(w http.ResponseWriter, r *http.Request) {
 
 	tmpl, err := template.ParseFiles(lp, fp)
 	if err != nil {
-		log.Print(err.Error())
+		slog.Error(err.Error())
 		http.Error(w, http.StatusText(500), 500)
 		return
 	}
 
 	err = tmpl.ExecuteTemplate(w, "layout", nil)
 	if err != nil {
-		log.Print(err.Error())
+		slog.Error(err.Error())
 		http.Error(w, http.StatusText(500), 500)
 	}
 }
