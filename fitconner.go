@@ -1,4 +1,4 @@
-package fitconner
+package main
 
 type FitConner struct {
 	Goal1      Goals

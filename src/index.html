@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Metas Fitcon</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="css/output.css" rel="stylesheet" />
+    <script src="/assets/js/htmx.min.js"></script>
+  </head>
+  <body>
+    <h3>Metas Fitcon</h3>
+    <form hx-get="/users/:id">
+      <input
+        id="title"
+        name="title"
+        type="text"
+        hx-post="/validate"
+        hx-trigger="change"
+        hx-sync="closest form:abort"
+      />
+      <button type="submit">Submit</button>
+    </form>
+  </body>
+</html>

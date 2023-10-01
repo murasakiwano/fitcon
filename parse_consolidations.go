@@ -1,4 +1,4 @@
-package parse_consolidations
+package main
 
 import (
 	"encoding/csv"
