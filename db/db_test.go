@@ -1,26 +1,23 @@
-package main
+package db
 
 import (
 	"testing"
-
-	"github.com/murasakiwano/fitcon_templates/internal/database"
-	"github.com/murasakiwano/fitcon_templates/internal/fitconner"
 )
 
 func TestDatabase(t *testing.T) {
-	db, err := database.InitDb("./fitcon_test.db")
+	fcs, err := NewFitConnerStore("./fitcon_test.db")
 	if err != nil {
 		t.Error(err)
 	}
-	defer db.Close()
+	defer fcs.db.Close()
 
-	participant := fitconner.FitConner{
+	participant := FitConner{
 		Name: "test",
-		Goal1: fitconner.BuildGoal1(
+		Goal1: BuildGoal1(
 			"10",
 			"20",
 		),
-		Goal2: fitconner.BuildGoal2(
+		Goal2: BuildGoal2(
 			"10",
 			"20",
 			"30",
@@ -28,19 +25,19 @@ func TestDatabase(t *testing.T) {
 	}
 
 	t.Run("insert users into table", func(t *testing.T) {
-		err = database.InsertFitconnerIntoTable(db, participant)
+		err = fcs.InsertFitconner(participant)
 		if err != nil {
 			t.Error(err)
 		}
 	})
 	t.Run("retrieve users from table", func(t *testing.T) {
-		err = database.InsertFitconnerIntoTable(db, participant)
+		err = fcs.InsertFitconner(participant)
 		if err != nil {
 			t.Error(err)
 		}
 
 		expectedName := participant.Name
-		got, err := database.RetrieveFitconnerFromTable(db, expectedName)
+		got, err := fcs.GetFitconner(expectedName)
 		if err != nil {
 			t.Error(err)
 		}
@@ -49,7 +46,7 @@ func TestDatabase(t *testing.T) {
 		}
 	})
 
-	_, err = db.Exec("delete from fitcon_metas;")
+	_, err = fcs.db.Exec("delete from fitcon_metas;")
 	if err != nil {
 		t.Error(err)
 	}

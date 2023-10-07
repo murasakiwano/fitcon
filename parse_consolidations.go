@@ -7,7 +7,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/murasakiwano/fitcon_templates/internal/fitconner"
+	"github.com/murasakiwano/fitcon/fitconner"
 )
 
 func ParseConsolidations(filename string) ([]byte, error) {

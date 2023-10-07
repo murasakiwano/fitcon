@@ -1,0 +1,63 @@
+package components
+
+templ Index() {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<title>Metas Fitcon</title>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<link href="/css/output.css" rel="stylesheet"/>
+			<script src="/assets/js/htmx.min.js"></script>
+		</head>
+		<body class="bg-[#1f1f28]">
+			<div id="main-container" class="md: container md:mx-auto prose prose-invert lg:prose-xl py-10 min-w-[90%]">
+				<h1 class="text-center">Metas Fitcon</h1>
+				<br/>
+				@getParticipantButton()
+			</div>
+		</body>
+	</html>
+}
+
+templ getParticipantButton() {
+	<form method="GET" hx-get="/users" hx-swap="outerHTML" class="flex lg:flex-row space-x-5 mx-auto max-w-[60%]">
+		<div><label class="relative block basis-3/4"><span class="sr-only">Search</span></label></div>
+		<input class="placeholder:italic placeholder:text-slate-400 block bg-white
+										dark:bg-slate-800 w-full border border-slate-300
+										dark:border-slate-700 rounded-md py-3 pl-4 pr-3 shadow-sm
+										focus:outline-none focus:border-sky-500 focus:ring-sky-500
+										focus:ring-1 sm:text-sm" placeholder="Insira sua matrícula" type="text" name="matricula"/>
+		<button type="submit" class="rounded-full bg-sky-600 px-8 text-zinc-100  font-medium basis-1/4 hover:bg-sky-700 transition-all">Buscar</button>
+	</form>
+}
+
+templ UserTable(name string) {
+	<div class="space-x-5 mx-2 overflow-x-auto min-w-[100%]">
+		<table class="drop-shadow-2xl bg-white dark:bg-zinc-600 rounded-lg text-center">
+			<thead class="uppercase">
+				<tr>
+					<th class="p-5 bg-sky-600 rounded-tl-lg" rowspan="2">Nome</th>
+					<th class="p-5 bg-sky-600" colspan="2">Meta 1</th>
+					<th class="p-5 bg-sky-600 rounded-tr-lg" colspan="3">Meta 2</th>
+				</tr>
+				<tr>
+					<th class="p-3 bg-sky-700">Percentual de Gordura</th>
+					<th class="p-3 bg-sky-700">Massa Magra</th>
+					<th class="p-3 bg-sky-700">Gordura Visceral</th>
+					<th class="p-3 bg-sky-700">Gordura Corporal</th>
+					<th class="p-3 bg-sky-700">Massa Magra</th>
+				</tr>
+			</thead>
+			<tr>
+				<td class="text-center p-3 bg-zinc-700 font-medium rounded-bl-lg">{ name }</td>
+				<td class="text-center p-3 bg-zinc-700">Diminuir 5%</td>
+				<td class="text-center p-3 bg-zinc-700">*</td>
+				<td class="text-center p-3 bg-zinc-700">*</td>
+				<td class="text-center p-3 bg-zinc-700">Aumentar 2 kg</td>
+				<td class="text-center p-3 bg-zinc-700 rounded-br-lg">*</td>
+			</tr>
+		</table>
+		<button hx-get="/" hx-target="#main-container" class="font-medium  hover:underline p-0 transition-all">Voltar</button>
+	</div>
+}

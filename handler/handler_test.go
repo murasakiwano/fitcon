@@ -11,13 +11,27 @@ import (
 )
 
 var (
-	mockDB = map[string]*User{
-		"jon@labstack.com": {"Jon Snow", "jon@labstack.com"},
+	userJSON = `{"name":"Monkey D. Luffy","matricula":"C0123456789"}`
+	mockDB   = map[string]*FitConner{
+		"C0123456789": NewFitConner("C0123456789", "Monkey D. Luffy", "Mugiwara", "Diminuir 5%", "Manter", "Aumentar 3%", "Aumentar 2kg", "Diminuir 10kg", 1),
 	}
-	userJSON = `{"name":"Jon Snow","email":"jon@labstack.com"}`
 )
 
-func TestCreateUser(t *testing.T) {
+func TestGetFitconner(t *testing.T) {
+	// Setup
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.SetPath("/users?matricula=C0123456789")
+
+	if assert.NoError(t, getUser(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, userJSON, rec.Body.String())
+	}
+}
+
+func TestCreateFitConner(t *testing.T) {
 	// Setup
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(userJSON))
@@ -29,24 +43,6 @@ func TestCreateUser(t *testing.T) {
 	// Assertions
 	if assert.NoError(t, h.createUser(c)) {
 		assert.Equal(t, http.StatusCreated, rec.Code)
-		assert.Equal(t, userJSON, rec.Body.String())
-	}
-}
-
-func TestGetUser(t *testing.T) {
-	// Setup
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
-	c.SetPath("/users/:email")
-	c.SetParamNames("email")
-	c.SetParamValues("jon@labstack.com")
-	h := &handler{mockDB}
-
-	// Assertions
-	if assert.NoError(t, h.getUser(c)) {
-		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, userJSON, rec.Body.String())
 	}
 }
