@@ -14,6 +14,7 @@ import (
 func main() {
 	log := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
 	fcs, err := db.NewFitConnerStore("fitcon_goals")
+	defer fcs.CloseDb()
 	if err != nil {
 		log.Error("failed to create store", slog.Any("error", err))
 		os.Exit(1)

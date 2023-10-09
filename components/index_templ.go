@@ -9,6 +9,11 @@ import "context"
 import "io"
 import "bytes"
 
+import (
+	"fmt"
+	"github.com/murasakiwano/fitcon/fitconner"
+)
+
 func Index() templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
 		templBuffer, templIsBuffer := w.(*bytes.Buffer)
@@ -110,7 +115,7 @@ func getParticipantButton() templ.Component {
 	})
 }
 
-func UserTable(name string) templ.Component {
+func UserTable(fc fitconner.Fitconner) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
 		templBuffer, templIsBuffer := w.(*bytes.Buffer)
 		if !templIsBuffer {
@@ -127,8 +132,35 @@ func UserTable(name string) templ.Component {
 		if err != nil {
 			return err
 		}
-		var_9 := `Nome`
+		var_9 := `Matrícula`
 		_, err = templBuffer.WriteString(var_9)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</th><th class=\"p-5 bg-sky-600 rounded-tl-lg\" rowspan=\"2\">")
+		if err != nil {
+			return err
+		}
+		var_10 := `Número da Equipe`
+		_, err = templBuffer.WriteString(var_10)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</th><th class=\"p-5 bg-sky-600 rounded-tl-lg\" rowspan=\"2\">")
+		if err != nil {
+			return err
+		}
+		var_11 := `Nome da Equipe`
+		_, err = templBuffer.WriteString(var_11)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</th><th class=\"p-5 bg-sky-600 rounded-tl-lg\" rowspan=\"2\">")
+		if err != nil {
+			return err
+		}
+		var_12 := `Nome`
+		_, err = templBuffer.WriteString(var_12)
 		if err != nil {
 			return err
 		}
@@ -136,8 +168,8 @@ func UserTable(name string) templ.Component {
 		if err != nil {
 			return err
 		}
-		var_10 := `Meta 1`
-		_, err = templBuffer.WriteString(var_10)
+		var_13 := `Meta 1`
+		_, err = templBuffer.WriteString(var_13)
 		if err != nil {
 			return err
 		}
@@ -145,8 +177,8 @@ func UserTable(name string) templ.Component {
 		if err != nil {
 			return err
 		}
-		var_11 := `Meta 2`
-		_, err = templBuffer.WriteString(var_11)
+		var_14 := `Meta 2`
+		_, err = templBuffer.WriteString(var_14)
 		if err != nil {
 			return err
 		}
@@ -154,34 +186,7 @@ func UserTable(name string) templ.Component {
 		if err != nil {
 			return err
 		}
-		var_12 := `Percentual de Gordura`
-		_, err = templBuffer.WriteString(var_12)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</th><th class=\"p-3 bg-sky-700\">")
-		if err != nil {
-			return err
-		}
-		var_13 := `Massa Magra`
-		_, err = templBuffer.WriteString(var_13)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</th><th class=\"p-3 bg-sky-700\">")
-		if err != nil {
-			return err
-		}
-		var_14 := `Gordura Visceral`
-		_, err = templBuffer.WriteString(var_14)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</th><th class=\"p-3 bg-sky-700\">")
-		if err != nil {
-			return err
-		}
-		var_15 := `Gordura Corporal`
+		var_15 := `Percentual de Gordura`
 		_, err = templBuffer.WriteString(var_15)
 		if err != nil {
 			return err
@@ -195,39 +200,75 @@ func UserTable(name string) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</th></tr></thead><tr><td class=\"text-center p-3 bg-zinc-700 font-medium rounded-bl-lg\">")
+		_, err = templBuffer.WriteString("</th><th class=\"p-3 bg-sky-700\">")
 		if err != nil {
 			return err
 		}
-		var var_17 string = name
-		_, err = templBuffer.WriteString(templ.EscapeString(var_17))
+		var_17 := `Gordura Visceral`
+		_, err = templBuffer.WriteString(var_17)
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</td><td class=\"text-center p-3 bg-zinc-700\">")
+		_, err = templBuffer.WriteString("</th><th class=\"p-3 bg-sky-700\">")
 		if err != nil {
 			return err
 		}
-		var_18 := `Diminuir 5%`
+		var_18 := `Gordura Corporal`
 		_, err = templBuffer.WriteString(var_18)
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</td><td class=\"text-center p-3 bg-zinc-700\">")
+		_, err = templBuffer.WriteString("</th><th class=\"p-3 bg-sky-700\">")
 		if err != nil {
 			return err
 		}
-		var_19 := `*`
+		var_19 := `Massa Magra`
 		_, err = templBuffer.WriteString(var_19)
 		if err != nil {
 			return err
 		}
+		_, err = templBuffer.WriteString("</th></tr></thead><tr><td class=\"text-center p-3 bg-zinc-700 font-medium rounded-bl-lg\">")
+		if err != nil {
+			return err
+		}
+		var var_20 string = fc.ID
+		_, err = templBuffer.WriteString(templ.EscapeString(var_20))
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</td><td class=\"text-center p-3 bg-zinc-700 font-medium\">")
+		if err != nil {
+			return err
+		}
+		var var_21 string = fmt.Sprintf("%v", fc.TeamNumber)
+		_, err = templBuffer.WriteString(templ.EscapeString(var_21))
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</td><td class=\"text-center p-3 bg-zinc-700 font-medium\">")
+		if err != nil {
+			return err
+		}
+		var var_22 string = fc.TeamName
+		_, err = templBuffer.WriteString(templ.EscapeString(var_22))
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</td><td class=\"text-center p-3 bg-zinc-700 font-medium\">")
+		if err != nil {
+			return err
+		}
+		var var_23 string = fc.Name
+		_, err = templBuffer.WriteString(templ.EscapeString(var_23))
+		if err != nil {
+			return err
+		}
 		_, err = templBuffer.WriteString("</td><td class=\"text-center p-3 bg-zinc-700\">")
 		if err != nil {
 			return err
 		}
-		var_20 := `*`
-		_, err = templBuffer.WriteString(var_20)
+		var var_24 string = fc.Goal1FatPercentage
+		_, err = templBuffer.WriteString(templ.EscapeString(var_24))
 		if err != nil {
 			return err
 		}
@@ -235,8 +276,26 @@ func UserTable(name string) templ.Component {
 		if err != nil {
 			return err
 		}
-		var_21 := `Aumentar 2 kg`
-		_, err = templBuffer.WriteString(var_21)
+		var var_25 string = fc.Goal1LeanMass
+		_, err = templBuffer.WriteString(templ.EscapeString(var_25))
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</td><td class=\"text-center p-3 bg-zinc-700\">")
+		if err != nil {
+			return err
+		}
+		var var_26 string = fc.Goal2VisceralFat
+		_, err = templBuffer.WriteString(templ.EscapeString(var_26))
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</td><td class=\"text-center p-3 bg-zinc-700\">")
+		if err != nil {
+			return err
+		}
+		var var_27 string = fc.Goal2FatPercentage
+		_, err = templBuffer.WriteString(templ.EscapeString(var_27))
 		if err != nil {
 			return err
 		}
@@ -244,8 +303,8 @@ func UserTable(name string) templ.Component {
 		if err != nil {
 			return err
 		}
-		var_22 := `*`
-		_, err = templBuffer.WriteString(var_22)
+		var var_28 string = fc.Goal2LeanMass
+		_, err = templBuffer.WriteString(templ.EscapeString(var_28))
 		if err != nil {
 			return err
 		}
@@ -253,8 +312,8 @@ func UserTable(name string) templ.Component {
 		if err != nil {
 			return err
 		}
-		var_23 := `Voltar`
-		_, err = templBuffer.WriteString(var_23)
+		var_29 := `Voltar`
+		_, err = templBuffer.WriteString(var_29)
 		if err != nil {
 			return err
 		}

@@ -26,7 +26,7 @@ func ParseConsolidations(filename string) ([]byte, error) {
 	participants := records[1:]
 	fmt.Println(categories)
 	fmt.Println(participants)
-	players := []fitconner.FitConner{}
+	players := []fitconner.Fitconner{}
 
 	for _, p := range participants {
 		teamNumber, err := strconv.Atoi(p[0])
@@ -42,7 +42,7 @@ func ParseConsolidations(filename string) ([]byte, error) {
 		goal2VisceralFat := p[6]
 		goal2FatPercentage := p[7]
 		goal2LeanMass := p[8]
-		players = append(players, fitconner.FitConner{
+		players = append(players, fitconner.Fitconner{
 			TeamNumber: teamNumber,
 			TeamName:   teamName,
 			Register:   register,

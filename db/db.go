@@ -52,21 +52,25 @@ type DB struct {
 }
 
 // creates database and returns a new DB
-func New(logger zap.SugaredLogger) (*DB, error) {
-	// this Pings the database trying to connect
-	db, err := sqlx.Connect("sqlite3", DbName)
+func New(logger *zap.SugaredLogger, dbName string) (*DB, error) {
+	if dbName == "" {
+		dbName = DbName
+	} // this Pings the database trying to connect
+	db, err := sqlx.Connect("sqlite3", dbName)
 	if err != nil {
 		logger.Error("Error connecting to the database", zap.Error(err))
 	}
 
-	// exec the schema or fail;
-	db.MustExec(fitconnerSchema)
-	if err != nil {
-		logger.Error("Error while creating table", zap.Error(err))
-		return nil, err
-	}
+	return &DB{db: db, logger: logger}, nil
+}
 
-	return &DB{db: db, logger: &logger}, nil
+func (db *DB) Create() {
+	// exec the schema or fail;
+	db.db.MustExec(fitconnerSchema)
+}
+
+func (db *DB) Drop() {
+	db.db.MustExec(fitconnerDrop)
 }
 
 // get a fitconner by id (matricula)

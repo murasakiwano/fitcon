@@ -1,41 +1,41 @@
 package handler
 
 import (
-	"log/slog"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/murasakiwano/fitcon/components"
 	"github.com/murasakiwano/fitcon/db"
 	"github.com/murasakiwano/fitcon/fitconner"
+	"go.uber.org/zap"
 )
 
-type User struct {
-	Name  string `json:"name" xml:"name" form:"name" query:"name"`
-	Email string `json:"email" xml:"email" form:"email" query:"email"`
-}
-
 type Handler struct {
-	FitConnerStore *db.FitConnerStore
-	Log            *slog.Logger
+	db  *db.DB
+	log *zap.SugaredLogger
 }
 
-func New(log *slog.Logger, fcs *db.FitConnerStore) *Handler {
-	return &Handler{
-		Log:            log,
-		FitConnerStore: fcs,
+func New(log *zap.SugaredLogger, fcs *db.DB) Handler {
+	return Handler{
+		log: log,
+		db:  fcs,
 	}
 }
 
 func (h *Handler) GetUser(c echo.Context) error {
+	h.log.Debugw("Request", zap.Any("path", c.Request().URL.Path), zap.Any("context", c.Request().Context()), zap.Any("body", c.Request().Body))
 	id := c.QueryParam("matricula")
-	c.Logger().Debug("matricula = " + id)
+	h.log.Debugw("Got", zap.String("matricula", id))
 
-	h.FitConnerStore.GetFitconner(id)
+	fc, err := h.db.GetFitConner(id)
+	if err != nil {
+		h.log.Error(err)
+		return c.JSON(http.StatusInternalServerError, err)
+	}
 
-	if err := components.UserTable("Zezin da Viola").Render(c.Request().Context(), c.Response().Writer); err != nil {
-		c.Logger().Error(err)
-		return err
+	if err := components.UserTable(*fc).Render(c.Request().Context(), c.Response().Writer); err != nil {
+		h.log.Error(err)
+		return c.JSON(http.StatusInternalServerError, err)
 	}
 
 	return nil
@@ -43,7 +43,7 @@ func (h *Handler) GetUser(c echo.Context) error {
 
 func (h *Handler) GetIndex(c echo.Context) error {
 	if err := components.Index().Render(c.Request().Context(), c.Response().Writer); err != nil {
-		c.Logger().Error(err)
+		h.log.Error(err)
 		return err
 	}
 
@@ -51,15 +51,23 @@ func (h *Handler) GetIndex(c echo.Context) error {
 }
 
 func (h *Handler) CreateUser(c echo.Context) error {
-	u := new(fitconner.FitConner)
+	u := new(fitconner.Fitconner)
 	if err := c.Bind(u); err != nil {
 		return err
 	}
 
-	if err := h.FitConnerStore.InsertFitconner(*u); err != nil {
-		h.Log.Error("%v", err)
+	if err := h.db.CreateFitConner(*u); err != nil {
+		h.log.Error(err)
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	return c.JSON(http.StatusCreated, u)
+	r := struct {
+		Id   string `json:"matricula"`
+		Name string `json:"name"`
+	}{
+		Id:   u.ID,
+		Name: u.Name,
+	}
+
+	return c.JSON(http.StatusCreated, r)
 }

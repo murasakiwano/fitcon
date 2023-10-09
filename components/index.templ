@@ -1,5 +1,10 @@
 package components
 
+import (
+	"fmt"
+	"github.com/murasakiwano/fitcon/fitconner"
+)
+
 templ Index() {
 	<!DOCTYPE html>
 	<html lang="en">
@@ -32,11 +37,14 @@ templ getParticipantButton() {
 	</form>
 }
 
-templ UserTable(name string) {
+templ UserTable(fc fitconner.Fitconner) {
 	<div class="space-x-5 mx-2 overflow-x-auto min-w-[100%]">
 		<table class="drop-shadow-2xl bg-white dark:bg-zinc-600 rounded-lg text-center">
 			<thead class="uppercase">
 				<tr>
+					<th class="p-5 bg-sky-600 rounded-tl-lg" rowspan="2">Matrícula</th>
+					<th class="p-5 bg-sky-600 rounded-tl-lg" rowspan="2">Número da Equipe</th>
+					<th class="p-5 bg-sky-600 rounded-tl-lg" rowspan="2">Nome da Equipe</th>
 					<th class="p-5 bg-sky-600 rounded-tl-lg" rowspan="2">Nome</th>
 					<th class="p-5 bg-sky-600" colspan="2">Meta 1</th>
 					<th class="p-5 bg-sky-600 rounded-tr-lg" colspan="3">Meta 2</th>
@@ -50,12 +58,15 @@ templ UserTable(name string) {
 				</tr>
 			</thead>
 			<tr>
-				<td class="text-center p-3 bg-zinc-700 font-medium rounded-bl-lg">{ name }</td>
-				<td class="text-center p-3 bg-zinc-700">Diminuir 5%</td>
-				<td class="text-center p-3 bg-zinc-700">*</td>
-				<td class="text-center p-3 bg-zinc-700">*</td>
-				<td class="text-center p-3 bg-zinc-700">Aumentar 2 kg</td>
-				<td class="text-center p-3 bg-zinc-700 rounded-br-lg">*</td>
+				<td class="text-center p-3 bg-zinc-700 font-medium rounded-bl-lg">{ fc.ID }</td>
+				<td class="text-center p-3 bg-zinc-700 font-medium">{ fmt.Sprintf("%v",  fc.TeamNumber) }</td>
+				<td class="text-center p-3 bg-zinc-700 font-medium">{ fc.TeamName }</td>
+				<td class="text-center p-3 bg-zinc-700 font-medium">{ fc.Name }</td>
+				<td class="text-center p-3 bg-zinc-700">{ fc.Goal1FatPercentage }</td>
+				<td class="text-center p-3 bg-zinc-700">{ fc.Goal1LeanMass }</td>
+				<td class="text-center p-3 bg-zinc-700">{ fc.Goal2VisceralFat }</td>
+				<td class="text-center p-3 bg-zinc-700">{ fc.Goal2FatPercentage }</td>
+				<td class="text-center p-3 bg-zinc-700 rounded-br-lg">{ fc.Goal2LeanMass }</td>
 			</tr>
 		</table>
 		<button hx-get="/" hx-target="#main-container" class="font-medium  hover:underline p-0 transition-all">Voltar</button>

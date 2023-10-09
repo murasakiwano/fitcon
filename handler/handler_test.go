@@ -1,47 +1,102 @@
 package handler
 
 import (
+	"fmt"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"strings"
 	"testing"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
+	"github.com/murasakiwano/fitcon/db"
+	"github.com/murasakiwano/fitcon/fitconner"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
 )
 
 var (
-	userJSON = `{"name":"Monkey D. Luffy","matricula":"C0123456789"}`
-	mockDB   = map[string]*FitConner{
-		"C0123456789": NewFitConner("C0123456789", "Monkey D. Luffy", "Mugiwara", "Diminuir 5%", "Manter", "Aumentar 3%", "Aumentar 2kg", "Diminuir 10kg", 1),
-	}
+	log, _   = zap.NewDevelopment()
+	sugar    = log.Sugar()
+	userJSON = `{"matricula":"1234567","name":"John Doe"}
+`
+	fc = fitconner.New(
+		"1234567",
+		"John Doe",
+		"Team 1",
+		"10",
+		"20",
+		"30",
+		"40",
+		"50",
+		1,
+	)
 )
+
+var sldb *sqlx.DB
+
+func init() {
+	var err error
+	sldb, err = sqlx.Connect("sqlite3", ":memory:")
+	if err != nil {
+		fmt.Println("Error connecting to the database", err)
+	}
+}
+
+var h Handler
+
+func init() {
+	fcs, err := db.New(sugar, ":memory:")
+	if err != nil {
+		sugar.Error("failed to create store", zap.Error(err))
+	}
+
+	h = New(sugar, fcs)
+}
 
 func TestGetFitconner(t *testing.T) {
 	// Setup
+	h.db.Create()
+	defer h.db.Drop()
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req := httptest.NewRequest(http.MethodGet, "/users?matricula=1234567", nil)
 	rec := httptest.NewRecorder()
+	err := h.db.CreateFitConner(*fc)
+	if err != nil {
+		slog.Error("Error:", err)
+	}
 	c := e.NewContext(req, rec)
-	c.SetPath("/users?matricula=C0123456789")
 
-	if assert.NoError(t, getUser(c)) {
+	if assert.NoError(t, h.GetUser(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, userJSON, rec.Body.String())
 	}
 }
 
 func TestCreateFitConner(t *testing.T) {
 	// Setup
+	h.db.Create()
+	defer h.db.Drop()
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(userJSON))
+	req := httptest.NewRequest(http.MethodPost, "/users", strings.NewReader(userJSON))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	h := &handler{mockDB}
+	c.SetParamNames("matricula", "name", "teamName", "teamNumber", "goal1", "goal2")
+	c.SetParamValues(
+		fc.ID,
+		strconv.Itoa(fc.TeamNumber),
+		fc.TeamName,
+		fc.Goal1FatPercentage,
+		fc.Goal1LeanMass,
+		fc.Goal2VisceralFat,
+		fc.Goal2FatPercentage,
+		fc.Goal2LeanMass,
+	)
 
 	// Assertions
-	if assert.NoError(t, h.createUser(c)) {
+	if assert.NoError(t, h.CreateUser(c)) {
 		assert.Equal(t, http.StatusCreated, rec.Code)
 		assert.Equal(t, userJSON, rec.Body.String())
 	}
