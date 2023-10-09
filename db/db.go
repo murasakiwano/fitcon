@@ -1,116 +1,108 @@
 package db
 
 import (
-	"database/sql"
-	"fmt"
-	"log/slog"
-
+	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/murasakiwano/fitcon/fitconner"
+	"go.uber.org/zap"
 )
 
-type FitConnerStore struct {
-	db        *sql.DB
-	tableName string
-}
-
-// creates database and returns a new FitConnerStore
-func NewFitConnerStore(dbName string) (*FitConnerStore, error) {
-	createDbQuery := `
+var fitconnerSchema = `
 create table if not exists fitcon_metas (
 	id varchar(7) primary key,
 	name text not null,
+	team_name text not null,
+	team_number integer not null,
 	goal1_fat_percentage text default '-',
 	goal1_lean_mass text default '-',
 	goal2_fat_percentage text default '-',
 	goal2_lean_mass text default '-',
 	goal2_visceral_fat text default '-'
-);
-delete from fitcon_metas;
-`
-	db, err := sql.Open("sqlite3", dbName)
-	if err != nil {
-		slog.Error("%v", err)
-		return nil, err
-	}
-	_, err = db.Exec(createDbQuery)
-	if err != nil {
-		slog.Error("%v", err)
-		return nil, err
-	}
+);`
 
-	return &FitConnerStore{db: db, tableName: "fitcon_metas"}, nil
+var fitconnerDrop = "drop table fitcon_metas;"
+
+var insertFitconnerQuery = `
+INSERT INTO fitcon_metas (
+	id,
+	name,
+	team_name,
+	team_number,
+	goal1_fat_percentage,
+	goal1_lean_mass,
+	goal2_fat_percentage,
+	goal2_lean_mass,
+	goal2_visceral_fat
+)
+VALUES (
+	:id,
+	:name,
+	:team_name,
+	:team_number,
+	:goal1_fat_percentage,
+	:goal1_lean_mass,
+	:goal2_fat_percentage,
+	:goal2_lean_mass,
+	:goal2_visceral_fat
+)`
+
+type DB struct {
+	db     *sqlx.DB
+	logger *zap.SugaredLogger
 }
 
-func (fcs *FitConnerStore) InsertFitconner(participant fitconner.FitConner) error {
-	query := `
-	insert into fitcon_metas (id, name, goal1_fat_percentage, goal1_lean_mass, goal2_fat_percentage, goal2_lean_mass, goal2_visceral_fat) values (?, ?, ?, ?, ?, ?);
-	`
-	_, err := fcs.db.Exec(
-		query,
-		participant.Register,
-		participant.Name,
-		participant.Goal1.FatPercentage,
-		participant.Goal1.LeanMass,
-		participant.Goal2.FatPercentage,
-		participant.Goal2.LeanMass,
-		participant.Goal2.VisceralFat,
-	)
+// creates database and returns a new DB
+func New(logger zap.SugaredLogger) (*DB, error) {
+	// this Pings the database trying to connect
+	db, err := sqlx.Connect("sqlite3", DbName)
 	if err != nil {
-		slog.Error("%v", err)
+		logger.Error("Error connecting to the database", zap.Error(err))
+	}
+
+	// exec the schema or fail;
+	db.MustExec(fitconnerSchema)
+	if err != nil {
+		logger.Error("Error while creating table", zap.Error(err))
+		return nil, err
+	}
+
+	return &DB{db: db, logger: &logger}, nil
+}
+
+// get a fitconner by id (matricula)
+func (db *DB) GetFitConner(id string) (*fitconner.Fitconner, error) {
+	var fitconner fitconner.Fitconner
+	err := db.db.Get(&fitconner, "SELECT * FROM fitcon_metas WHERE id=$1", id)
+	if err != nil {
+		db.logger.Error("Error while getting fitconner", zap.Error(err))
+		return nil, err
+	}
+
+	db.logger.Debugw("Fitconner found", zap.String("id", fitconner.ID))
+	return &fitconner, nil
+}
+
+// insert a fitconner into the database
+func (db *DB) CreateFitConner(fc fitconner.Fitconner) error {
+	_, err := db.db.NamedExec(insertFitconnerQuery, fc)
+	if err != nil {
+		db.logger.Error("Error while creating fitconner", zap.Error(err))
 		return err
 	}
 
+	db.logger.Infow("Fitconner created", zap.String("id", fc.ID))
 	return nil
 }
 
-// Deletes by id
-func (fcs *FitConnerStore) DeleteFitconner(participant fitconner.FitConner) error {
-	query := "delete from %s where id = ?;"
-	query = fmt.Sprintf(query, fcs.tableName)
-	result, err := fcs.db.Exec(query, participant.Name)
+// batch insert fitconners into the database
+func (db *DB) BatchInsert(fcs []fitconner.Fitconner) error {
+	_, err := db.db.NamedExec(insertFitconnerQuery, fcs)
 	if err != nil {
-		slog.Error("%v", err)
+		db.logger.Error("Error while batch inserting fitconners", zap.Error(err))
 		return err
 	}
 
-	slog.Info("Result: %v", result)
+	db.logger.Info("Successfully batch-inserted fitconners")
 
 	return nil
-}
-
-func (fcs *FitConnerStore) GetFitconner(playerId string) (*fitconner.FitConner, error) {
-	query := "select * from %s where id = $1"
-	query = fmt.Sprintf(query, fcs.tableName)
-	result := fcs.db.QueryRow(query, playerId)
-
-	var id,
-		name,
-		goal1_fat_percentage,
-		goal1_lean_mass,
-		goal2_fat_percentage,
-		goal2_lean_mass,
-		goal2_visceral_fat string
-
-	if err := result.Scan(
-		&id,
-		&name,
-		&goal1_fat_percentage,
-		&goal1_lean_mass,
-		&goal2_fat_percentage,
-		&goal2_lean_mass,
-		&goal2_visceral_fat); err != nil {
-		slog.Error("Error encountered while querying table - %v", err)
-		return nil, err
-	}
-
-	participant := fitconner.FitConner{
-		Name:  name,
-		Goal1: fitconner.BuildGoal1(goal1_fat_percentage, goal1_lean_mass),
-		Goal2: fitconner.BuildGoal2(goal2_fat_percentage, goal2_lean_mass, goal2_visceral_fat),
-	}
-
-	slog.Info("Got participant: %+v", participant)
-
-	return &participant, nil
 }

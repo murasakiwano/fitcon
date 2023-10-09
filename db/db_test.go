@@ -1,53 +1,109 @@
 package db
 
 import (
+	"fmt"
+	"reflect"
+	"sort"
 	"testing"
+
+	"github.com/jmoiron/sqlx"
+	"github.com/murasakiwano/fitcon/fitconner"
+	"go.uber.org/zap"
 )
 
-func TestDatabase(t *testing.T) {
-	fcs, err := NewFitConnerStore("./fitcon_test.db")
+var sldb *sqlx.DB
+
+func init() {
+	var err error
+	sldb, err = sqlx.Connect("sqlite3", ":memory:")
 	if err != nil {
-		t.Error(err)
+		fmt.Println("Error connecting to the database", err)
 	}
-	defer fcs.db.Close()
+}
 
-	participant := FitConner{
-		Name: "test",
-		Goal1: BuildGoal1(
-			"10",
-			"20",
-		),
-		Goal2: BuildGoal2(
-			"10",
-			"20",
-			"30",
-		),
-	}
+type Schema struct {
+	create string
+	drop   string
+}
 
-	t.Run("insert users into table", func(t *testing.T) {
-		err = fcs.InsertFitconner(participant)
-		if err != nil {
-			t.Error(err)
-		}
-	})
-	t.Run("retrieve users from table", func(t *testing.T) {
-		err = fcs.InsertFitconner(participant)
-		if err != nil {
-			t.Error(err)
-		}
+func (s Schema) Create() {
+	sldb.MustExec(s.create)
+}
 
-		expectedName := participant.Name
-		got, err := fcs.GetFitconner(expectedName)
-		if err != nil {
-			t.Error(err)
-		}
-		if got.Name != expectedName {
-			t.Errorf("Expected %s, got %s", expectedName, got.Name)
-		}
-	})
+func (s Schema) Drop() {
+	sldb.MustExec(s.drop)
+}
 
-	_, err = fcs.db.Exec("delete from fitcon_metas;")
+var defaultSchema = Schema{
+	create: fitconnerSchema,
+	drop:   fitconnerDrop,
+}
+
+var logger, _ = zap.NewDevelopment()
+
+func TestInsertFitConner(t *testing.T) {
+	defaultSchema.Create()
+	defer defaultSchema.Drop()
+	db := DB{db: sldb, logger: logger.Sugar()}
+	fc := fitconner.New(
+		"1234567",
+		"John Doe",
+		"Team 1",
+		"10",
+		"20",
+		"30",
+		"40",
+		"50",
+		1,
+	)
+	err := db.CreateFitConner(*fc)
 	if err != nil {
-		t.Error(err)
+		t.Errorf("Error while creating fitconner: %v", err)
+	}
+}
+
+func TestGetFitConner(t *testing.T) {
+	defaultSchema.Create()
+	defer defaultSchema.Drop()
+	db := DB{db: sldb, logger: logger.Sugar()}
+	db.db.MustExec(insertFitconnerQuery, "1234567", "John Doe", "Team 1", 1, "10", "20", "30", "40", "50")
+
+	_, err := db.GetFitConner("1234567")
+	if err != nil {
+		t.Errorf("Error while getting fitconner: %v", err)
+	}
+}
+
+func TestBatchInsertFitConner(t *testing.T) {
+	defaultSchema.Create()
+	defer defaultSchema.Drop()
+	db := DB{db: sldb, logger: logger.Sugar()}
+
+	fcs := []fitconner.Fitconner{
+		*fitconner.New("1234142", "Zeca Pagodinho", "Unidos da Brahma", "14", "42", "14", "18", "14", 1),
+		*fitconner.New("1234143", "Monkey D. Luffy", "Mugiwara", "4", "2", "1", "8", "1", 1),
+		*fitconner.New("1234144", "Roronoa Zoro", "Mugiwara", "2", "1", "-2", "-129", "-2", 1),
+	}
+
+	err := db.BatchInsert(fcs)
+	if err != nil {
+		t.Errorf("Error while batch inserting fitconners: %v", err)
+	}
+
+	newFcs := []fitconner.Fitconner{}
+	err = db.db.Select(&newFcs, "SELECT * FROM fitcon_metas")
+	if err != nil {
+		t.Errorf("Error while getting fitconners: %v", err)
+	}
+
+	sort.Slice(fcs, func(i, j int) bool {
+		return i > j
+	})
+	sort.Slice(newFcs, func(i, j int) bool {
+		return i > j
+	})
+
+	if !reflect.DeepEqual(fcs, newFcs) {
+		t.Fatalf("Expected %v, got %v", fcs, newFcs)
 	}
 }
