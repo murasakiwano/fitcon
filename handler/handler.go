@@ -71,3 +71,14 @@ func (h *Handler) CreateUser(c echo.Context) error {
 
 	return c.JSON(http.StatusCreated, r)
 }
+
+func (h *Handler) ValidateId(c echo.Context) error {
+	id := c.FormValue("matricula")
+
+	if err := h.db.ValidateId(id); err != nil {
+		h.log.Error(err)
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusOK, "ok")
+}

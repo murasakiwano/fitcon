@@ -1,6 +1,9 @@
 package db
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/murasakiwano/fitcon/fitconner"
@@ -51,6 +54,21 @@ type DB struct {
 	logger *zap.SugaredLogger
 }
 
+type ValidationError struct {
+	Code    int
+	Message string
+}
+
+func (ve ValidationError) Error() string {
+	return fmt.Sprintf("Validation error: %s", ve.Message)
+}
+
+const (
+	INVALID_LENGTH = iota + 1
+	INVALID_FIRST_CHARACTER
+	PARSE_ERROR
+)
+
 // creates database and returns a new DB
 func New(logger *zap.SugaredLogger, dbName string) (*DB, error) {
 	if dbName == "" {
@@ -88,6 +106,10 @@ func (db *DB) GetFitConner(id string) (*fitconner.Fitconner, error) {
 
 // insert a fitconner into the database
 func (db *DB) CreateFitConner(fc fitconner.Fitconner) error {
+	if err := db.ValidateId(fc.ID); err != nil {
+		db.logger.Error("Error while validating fitconner", zap.Error(err))
+		return err
+	}
 	_, err := db.db.NamedExec(insertFitconnerQuery, fc)
 	if err != nil {
 		db.logger.Error("Error while creating fitconner", zap.Error(err))
@@ -100,6 +122,12 @@ func (db *DB) CreateFitConner(fc fitconner.Fitconner) error {
 
 // batch insert fitconners into the database
 func (db *DB) BatchInsert(fcs []fitconner.Fitconner) error {
+	for _, fc := range fcs {
+		if err := db.ValidateId(fc.ID); err != nil {
+			db.logger.Error("Error while validating fitconner", zap.Error(err))
+			return err
+		}
+	}
 	_, err := db.db.NamedExec(insertFitconnerQuery, fcs)
 	if err != nil {
 		db.logger.Error("Error while batch inserting fitconners", zap.Error(err))
@@ -107,6 +135,22 @@ func (db *DB) BatchInsert(fcs []fitconner.Fitconner) error {
 	}
 
 	db.logger.Info("Successfully batch-inserted fitconners")
+
+	return nil
+}
+
+func (db *DB) ValidateId(id string) error {
+	if len(id) != 7 {
+		return ValidationError{INVALID_LENGTH, "id must have 7 characters"}
+	}
+
+	if id[0] != 'C' {
+		return ValidationError{INVALID_FIRST_CHARACTER, "id must start with 'C'"}
+	}
+
+	if _, err := strconv.Atoi(id[1:]); err != nil {
+		return ValidationError{PARSE_ERROR, fmt.Sprintf("could not convert %v into a number", id[1:])}
+	}
 
 	return nil
 }

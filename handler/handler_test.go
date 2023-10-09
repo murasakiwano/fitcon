@@ -20,10 +20,10 @@ import (
 var (
 	log, _   = zap.NewDevelopment()
 	sugar    = log.Sugar()
-	userJSON = `{"matricula":"1234567","name":"John Doe"}
+	userJSON = `{"matricula":"C123456","name":"John Doe"}
 `
 	fc = fitconner.New(
-		"1234567",
+		"C123456",
 		"John Doe",
 		"Team 1",
 		"10",
@@ -61,7 +61,7 @@ func TestGetFitconner(t *testing.T) {
 	h.db.Create()
 	defer h.db.Drop()
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/users?matricula=1234567", nil)
+	req := httptest.NewRequest(http.MethodGet, "/users?matricula=C123456", nil)
 	rec := httptest.NewRecorder()
 	err := h.db.CreateFitConner(*fc)
 	if err != nil {
