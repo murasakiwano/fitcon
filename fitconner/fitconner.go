@@ -1,22 +1,19 @@
 package fitconner
 
-type FitConner struct {
-	Goal1      Goals  `json:"goals1" xml:"goals1" form:"goals1" query:"goals1"`
-	Goal2      Goals  `json:"goals2" xml:"goals2" form:"goals2" query:"goals2"`
-	TeamName   string `json:"teamName" xml:"teamName" form:"teamName" query:"teamName"`
-	Name       string `json:"name" xml:"name" form:"name" query:"name"`
-	Register   string `json:"register" xml:"register" form:"register" query:"register"`
-	TeamNumber int    `json:"teamNumber" xml:"teamNumber" form:"teamNumber" query:"teamNumber"`
+type Fitconner struct {
+	TeamName           string `json:"teamName"  form:"teamName" db:"team_name"`
+	Name               string `json:"name"  form:"name" db:"name"`
+	ID                 string `json:"matricula"  form:"matricula" db:"id"`
+	Goal1FatPercentage string `json:"goal1FatPercentage"  form:"goal1FatPercentage" db:"goal1_fat_percentage"`
+	Goal1LeanMass      string `json:"goal1LeanMass"  form:"goal1LeanMass" db:"goal1_lean_mass"`
+	Goal2FatPercentage string `json:"goal2FatPercentage"  form:"goal2FatPercentage" db:"goal2_fat_percentage"`
+	Goal2LeanMass      string `json:"goal2LeanMass"  form:"goal2LeanMass" db:"goal2_lean_mass"`
+	Goal2VisceralFat   string `json:"goal2VisceralFat"  form:"goal2VisceralFat" db:"goal2_visceral_fat"`
+	TeamNumber         int    `json:"teamNumber"  form:"teamNumber" db:"team_number"`
 }
 
-type Goals struct {
-	FatPercentage string `json:"fatPercentage" xml:"fatPercentage" form:"fatPercentage" query:"fatPercentage"`
-	LeanMass      string `json:"leanMass" xml:"leanMass" form:"leanMass" query:"leanMass"`
-	VisceralFat   string `json:"visceralFat" xml:"visceralFat" form:"visceralFat" query:"visceralFat"`
-}
-
-func NewFitConner(
-	register,
+func New(
+	id,
 	name,
 	teamName,
 	g1FatPercentage,
@@ -25,25 +22,23 @@ func NewFitConner(
 	g2LeanMass,
 	g2VisceralFat string,
 	teamNumber int,
-) *FitConner {
-	g1 := BuildGoal1(g1FatPercentage, g1LeanMass)
-	g2 := BuildGoal2(g2FatPercentage, g2LeanMass, g2VisceralFat)
-
-	return &FitConner{
-		Register:   register,
-		Name:       name,
-		TeamName:   teamName,
-		TeamNumber: teamNumber,
-		Goal1:      g1,
-		Goal2:      g2,
+) *Fitconner {
+	goals1 := buildGoals(g1FatPercentage, g1LeanMass, "")
+	goals2 := buildGoals(g2FatPercentage, g2LeanMass, g2VisceralFat)
+	return &Fitconner{
+		ID:                 id,
+		Name:               name,
+		TeamName:           teamName,
+		TeamNumber:         teamNumber,
+		Goal1FatPercentage: goals1["fat_percentage"],
+		Goal1LeanMass:      goals1["lean_mass"],
+		Goal2FatPercentage: goals2["fat_percentage"],
+		Goal2LeanMass:      goals2["lean_mass"],
+		Goal2VisceralFat:   goals2["visceral_fat"],
 	}
 }
 
-func BuildGoal1(fatPercentage string, leanMass string) Goals {
-	return BuildGoal2(fatPercentage, leanMass, "")
-}
-
-func BuildGoal2(fatPercentage string, leanMass string, visceralFat string) Goals {
+func buildGoals(fatPercentage string, leanMass string, visceralFat string) map[string]string {
 	var fp, lm, vf string
 
 	fp = fatPercentage
@@ -60,9 +55,9 @@ func BuildGoal2(fatPercentage string, leanMass string, visceralFat string) Goals
 		vf = "-"
 	}
 
-	return Goals{
-		FatPercentage: fp,
-		LeanMass:      lm,
-		VisceralFat:   vf,
+	return map[string]string{
+		"fatPercentage": fp,
+		"leanMass":      lm,
+		"visceralFat":   vf,
 	}
 }
