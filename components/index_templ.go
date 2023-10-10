@@ -45,7 +45,7 @@ func Index() templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</script></head><body class=\"bg-[#1f1f28]\"><div id=\"main-container\" class=\"md: container md:mx-auto prose prose-invert lg:prose-xl py-10 min-w-[90%]\"><h1 class=\"text-center\">")
+		_, err = templBuffer.WriteString("</script></head><body class=\"dark:bg-zinc-800\"><div id=\"main-container\" class=\"md:container md:mx-auto prose dark:prose-invert lg:prose-xl py-10 min-w-[90%]\"><h1 class=\"text-center\">")
 		if err != nil {
 			return err
 		}
@@ -86,16 +86,16 @@ func getParticipantButton() templ.Component {
 			var_5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, err = templBuffer.WriteString("<form method=\"GET\" hx-get=\"/users\" hx-swap=\"outerHTML\" class=\"flex lg:flex-row space-x-5 mx-auto max-w-[60%]\"><div><label class=\"relative block basis-3/4\"><span class=\"sr-only\">")
+		_, err = templBuffer.WriteString("<form class=\"w-full max-w-sm mx-auto\" method=\"get\" hx-get=\"/users\" hx-swap=\"outerHTML\"><label class=\"block uppercase tracking-wide text-gray-700 dark:text-zinc-200 text-xs font-bold mb-2\">")
 		if err != nil {
 			return err
 		}
-		var_6 := `Search`
+		var_6 := `Insira sua matrícula`
 		_, err = templBuffer.WriteString(var_6)
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</span></label></div><input class=\"placeholder:italic placeholder:text-slate-400 block bg-white\n										dark:bg-slate-800 w-full border border-slate-300\n										dark:border-slate-700 rounded-md py-3 pl-4 pr-3 shadow-sm\n										focus:outline-none focus:border-sky-500 focus:ring-sky-500\n										focus:ring-1 sm:text-sm\" placeholder=\"Insira sua matrícula\" type=\"text\" name=\"matricula\"><button type=\"submit\" class=\"rounded-full bg-sky-600 px-8 text-zinc-100  font-medium basis-1/4 hover:bg-sky-700 transition-all\">")
+		_, err = templBuffer.WriteString(" <div class=\"flex items-center border-b border-indigo-500 py-2\"><input class=\"placeholder:text-zinc-500 placeholder:italic appearance-none bg-transparent border-none w-full mr-3 py-1 px-2 leading-tight focus:border-none rounded-md text-zinc-700 dark:text-zinc-300\" type=\"text\" placeholder=\"C012345\" name=\"matricula\" aria-label=\"Matrícula\"><button class=\"flex-shrink-0 bg-indigo-500 hover:bg-indigo-700 border-indigo-500 hover:border-indigo-700 text-sm border-4 text-white py-1 px-2 rounded\" type=\"submit\">")
 		if err != nil {
 			return err
 		}
@@ -104,7 +104,7 @@ func getParticipantButton() templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</button></form>")
+		_, err = templBuffer.WriteString("</button></div></label></form>")
 		if err != nil {
 			return err
 		}
@@ -308,12 +308,116 @@ func UserTable(fc fitconner.Fitconner) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</td></tr></table><button hx-get=\"/\" hx-target=\"#main-container\" class=\"font-medium  hover:underline p-0 transition-all\">")
+		_, err = templBuffer.WriteString("</td></tr></table><button hx-get=\"/\" hx-target=\"#main-container\" class=\"font-medium hover:underline p-0 transition-all\">")
 		if err != nil {
 			return err
 		}
 		var_29 := `Voltar`
 		_, err = templBuffer.WriteString(var_29)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</button></div>")
+		if err != nil {
+			return err
+		}
+		if !templIsBuffer {
+			_, err = templBuffer.WriteTo(w)
+		}
+		return err
+	})
+}
+
+func UserNotFound(matricula string) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+		templBuffer, templIsBuffer := w.(*bytes.Buffer)
+		if !templIsBuffer {
+			templBuffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templBuffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		var_30 := templ.GetChildren(ctx)
+		if var_30 == nil {
+			var_30 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, err = templBuffer.WriteString("<div class=\"w-full max-w-sm mx-auto\"><p class=\"mx-auto\">")
+		if err != nil {
+			return err
+		}
+		var_31 := `Participante com matrícula `
+		_, err = templBuffer.WriteString(var_31)
+		if err != nil {
+			return err
+		}
+		var var_32 string = fmt.Sprintf("%v ", matricula)
+		_, err = templBuffer.WriteString(templ.EscapeString(var_32))
+		if err != nil {
+			return err
+		}
+		var_33 := `não foi encontrado`
+		_, err = templBuffer.WriteString(var_33)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</p><button hx-get=\"/\" hx-target=\"#main-container\" class=\"font-medium hover:underline p-0 transition-all\">")
+		if err != nil {
+			return err
+		}
+		var_34 := `Voltar`
+		_, err = templBuffer.WriteString(var_34)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</button></div>")
+		if err != nil {
+			return err
+		}
+		if !templIsBuffer {
+			_, err = templBuffer.WriteTo(w)
+		}
+		return err
+	})
+}
+
+func InvalidUser(matricula string) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+		templBuffer, templIsBuffer := w.(*bytes.Buffer)
+		if !templIsBuffer {
+			templBuffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templBuffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		var_35 := templ.GetChildren(ctx)
+		if var_35 == nil {
+			var_35 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, err = templBuffer.WriteString("<div class=\"w-full max-w-sm mx-auto\"><p class=\"mx-auto\">")
+		if err != nil {
+			return err
+		}
+		var_36 := `A matrícula `
+		_, err = templBuffer.WriteString(var_36)
+		if err != nil {
+			return err
+		}
+		var var_37 string = fmt.Sprintf("%v ", matricula)
+		_, err = templBuffer.WriteString(templ.EscapeString(var_37))
+		if err != nil {
+			return err
+		}
+		var_38 := `é inválida`
+		_, err = templBuffer.WriteString(var_38)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</p><button hx-get=\"/\" hx-target=\"#main-container\" class=\"font-medium hover:underline p-0 transition-all\">")
+		if err != nil {
+			return err
+		}
+		var_39 := `Voltar`
+		_, err = templBuffer.WriteString(var_39)
 		if err != nil {
 			return err
 		}

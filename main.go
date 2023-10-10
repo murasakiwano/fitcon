@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log/slog"
 	"os"
 
 	"github.com/labstack/echo/v4"
@@ -9,20 +8,30 @@ import (
 	"github.com/labstack/gommon/log"
 	"github.com/murasakiwano/fitcon/db"
 	"github.com/murasakiwano/fitcon/handler"
+	"go.uber.org/zap"
 )
 
 func main() {
-	log := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
-	fcs, err := db.NewFitConnerStore("fitcon_goals")
-	defer fcs.CloseDb()
+	var logger zap.SugaredLogger
+
+	if os.Getenv("ENV") == "production" {
+		l, _ := zap.NewProduction()
+		logger = *l.Sugar()
+	} else {
+		l, _ := zap.NewDevelopment()
+		logger = *l.Sugar()
+	}
+
+	fcs, err := db.New(&logger, db.FitConnersTable)
+	defer fcs.CloseDB()
 	if err != nil {
-		log.Error("failed to create store", slog.Any("error", err))
+		logger.Error(zap.Error(err))
 		os.Exit(1)
 	}
 
-	h := handler.New(log, fcs)
+	h := handler.New(&logger, fcs)
 
-	Serve(h)
+	Serve(&h)
 }
 
 func Serve(h *handler.Handler) {

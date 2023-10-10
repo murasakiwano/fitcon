@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -27,10 +28,15 @@ func (h *Handler) GetUser(c echo.Context) error {
 	id := c.QueryParam("matricula")
 	h.log.Debugw("Got", zap.String("matricula", id))
 
+	if err := h.db.ValidateId(id); err != nil {
+		h.log.Error(err)
+		return components.InvalidUser(id).Render(context.Background(), c.Response().Writer)
+	}
+
 	fc, err := h.db.GetFitConner(id)
 	if err != nil {
 		h.log.Error(err)
-		return c.JSON(http.StatusInternalServerError, err)
+		return components.UserNotFound(id).Render(c.Request().Context(), c.Response().Writer)
 	}
 
 	if err := components.UserTable(*fc).Render(c.Request().Context(), c.Response().Writer); err != nil {
@@ -70,15 +76,4 @@ func (h *Handler) CreateUser(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusCreated, r)
-}
-
-func (h *Handler) ValidateId(c echo.Context) error {
-	id := c.FormValue("matricula")
-
-	if err := h.db.ValidateId(id); err != nil {
-		h.log.Error(err)
-		return c.JSON(http.StatusInternalServerError, err)
-	}
-
-	return c.JSON(http.StatusOK, "ok")
 }

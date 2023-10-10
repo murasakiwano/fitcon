@@ -3,6 +3,7 @@ package db
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
@@ -10,8 +11,9 @@ import (
 	"go.uber.org/zap"
 )
 
-var fitconnerSchema = `
-create table if not exists fitcon_metas (
+var (
+	fitconnerSchema = fmt.Sprintf(`
+create table if not exists %s (
 	id varchar(7) primary key,
 	name text not null,
 	team_name text not null,
@@ -21,12 +23,11 @@ create table if not exists fitcon_metas (
 	goal2_fat_percentage text default '-',
 	goal2_lean_mass text default '-',
 	goal2_visceral_fat text default '-'
-);`
-
-var fitconnerDrop = "drop table fitcon_metas;"
-
-var insertFitconnerQuery = `
-INSERT INTO fitcon_metas (
+);`, FitConnersTable)
+	fitconnerDrop        = fmt.Sprintf("drop table %s;", FitConnersTable)
+	getQuery             = fmt.Sprintf("SELECT * FROM %s WHERE id=$1", FitConnersTable)
+	insertFitconnerQuery = fmt.Sprintf(`
+INSERT INTO %s (
 	id,
 	name,
 	team_name,
@@ -47,7 +48,8 @@ VALUES (
 	:goal2_fat_percentage,
 	:goal2_lean_mass,
 	:goal2_visceral_fat
-)`
+`, FitConnersTable)
+)
 
 type DB struct {
 	db     *sqlx.DB
@@ -55,18 +57,18 @@ type DB struct {
 }
 
 type ValidationError struct {
-	Code    int
 	Message string
+	Code    int
 }
 
 func (ve ValidationError) Error() string {
 	return fmt.Sprintf("Validation error: %s", ve.Message)
 }
 
-const (
-	INVALID_LENGTH = iota + 1
-	INVALID_FIRST_CHARACTER
-	PARSE_ERROR
+var (
+	INVALID_LENGTH          = &ValidationError{Message: "id must have 7 characters", Code: 0}
+	INVALID_FIRST_CHARACTER = &ValidationError{Message: "id must start with 'C' or 'c'", Code: 1}
+	PARSE_ERROR             = &ValidationError{Message: "could not convert %v into a number", Code: 2}
 )
 
 // creates database and returns a new DB
@@ -79,7 +81,10 @@ func New(logger *zap.SugaredLogger, dbName string) (*DB, error) {
 		logger.Error("Error connecting to the database", zap.Error(err))
 	}
 
-	return &DB{db: db, logger: logger}, nil
+	database := DB{db: db, logger: logger}
+	database.Create()
+
+	return &database, nil
 }
 
 func (db *DB) Create() {
@@ -94,7 +99,13 @@ func (db *DB) Drop() {
 // get a fitconner by id (matricula)
 func (db *DB) GetFitConner(id string) (*fitconner.Fitconner, error) {
 	var fitconner fitconner.Fitconner
-	err := db.db.Get(&fitconner, "SELECT * FROM fitcon_metas WHERE id=$1", id)
+
+	if err := db.ValidateId(id); err != nil {
+		db.logger.Error("Error while validating id", zap.Error(err))
+		return nil, err
+	}
+
+	err := db.db.Get(&fitconner, getQuery, strings.ToUpper(id))
 	if err != nil {
 		db.logger.Error("Error while getting fitconner", zap.Error(err))
 		return nil, err
@@ -141,16 +152,23 @@ func (db *DB) BatchInsert(fcs []fitconner.Fitconner) error {
 
 func (db *DB) ValidateId(id string) error {
 	if len(id) != 7 {
-		return ValidationError{INVALID_LENGTH, "id must have 7 characters"}
+		db.logger.Errorw("Invalid length", zap.String("id", id), zap.Int("id len", len(id)))
+		return INVALID_LENGTH
 	}
 
-	if id[0] != 'C' {
-		return ValidationError{INVALID_FIRST_CHARACTER, "id must start with 'C'"}
+	if id[0] != 'C' && id[0] != 'c' {
+		db.logger.Errorw("Invalid first character", zap.String("id", id))
+		return INVALID_FIRST_CHARACTER
 	}
 
 	if _, err := strconv.Atoi(id[1:]); err != nil {
-		return ValidationError{PARSE_ERROR, fmt.Sprintf("could not convert %v into a number", id[1:])}
+		db.logger.Errorw("Error while parsing id", zap.Error(err))
+		return PARSE_ERROR
 	}
 
 	return nil
+}
+
+func (db *DB) CloseDB() {
+	db.db.Close()
 }
