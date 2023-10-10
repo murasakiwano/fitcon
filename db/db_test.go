@@ -91,7 +91,7 @@ func TestBatchInsertFitConner(t *testing.T) {
 	}
 
 	newFcs := []fitconner.Fitconner{}
-	err = db.db.Select(&newFcs, "SELECT * FROM fitcon_metas")
+	err = db.db.Select(&newFcs, "SELECT * FROM fitconners")
 	if err != nil {
 		t.Errorf("Error while getting fitconners: %v", err)
 	}

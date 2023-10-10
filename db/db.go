@@ -48,7 +48,7 @@ VALUES (
 	:goal2_fat_percentage,
 	:goal2_lean_mass,
 	:goal2_visceral_fat
-`, FitConnersTable)
+);`, FitConnersTable)
 )
 
 type DB struct {
@@ -78,11 +78,12 @@ func New(logger *zap.SugaredLogger, dbName string) (*DB, error) {
 	} // this Pings the database trying to connect
 	db, err := sqlx.Connect("sqlite3", dbName)
 	if err != nil {
-		logger.Error("Error connecting to the database", zap.Error(err))
+		logger.Errorw("Error connecting to the database", zap.Error(err))
 	}
 
 	database := DB{db: db, logger: logger}
 	database.Create()
+	logger.Debugw("Database created", zap.String("name", dbName))
 
 	return &database, nil
 }
@@ -100,14 +101,15 @@ func (db *DB) Drop() {
 func (db *DB) GetFitConner(id string) (*fitconner.Fitconner, error) {
 	var fitconner fitconner.Fitconner
 
+	db.logger.Debugw("Id is", zap.String("matricula", id))
 	if err := db.ValidateId(id); err != nil {
-		db.logger.Error("Error while validating id", zap.Error(err))
+		db.logger.Errorw("Error while validating id", zap.Error(err))
 		return nil, err
 	}
 
 	err := db.db.Get(&fitconner, getQuery, strings.ToUpper(id))
 	if err != nil {
-		db.logger.Error("Error while getting fitconner", zap.Error(err))
+		db.logger.Errorw("Error while getting fitconner", zap.String("fitConnerId", id), zap.Error(err))
 		return nil, err
 	}
 
@@ -118,12 +120,12 @@ func (db *DB) GetFitConner(id string) (*fitconner.Fitconner, error) {
 // insert a fitconner into the database
 func (db *DB) CreateFitConner(fc fitconner.Fitconner) error {
 	if err := db.ValidateId(fc.ID); err != nil {
-		db.logger.Error("Error while validating fitconner", zap.Error(err))
+		db.logger.Errorw("Error while validating fitconner", zap.Error(err))
 		return err
 	}
 	_, err := db.db.NamedExec(insertFitconnerQuery, fc)
 	if err != nil {
-		db.logger.Error("Error while creating fitconner", zap.Error(err))
+		db.logger.Errorw("Error while creating fitconner", zap.Error(err))
 		return err
 	}
 
@@ -135,14 +137,16 @@ func (db *DB) CreateFitConner(fc fitconner.Fitconner) error {
 func (db *DB) BatchInsert(fcs []fitconner.Fitconner) error {
 	for _, fc := range fcs {
 		if err := db.ValidateId(fc.ID); err != nil {
-			db.logger.Error("Error while validating fitconner", zap.Error(err))
+			db.logger.Errorw("Error while validating fitconner", zap.Error(err))
 			return err
 		}
-	}
-	_, err := db.db.NamedExec(insertFitconnerQuery, fcs)
-	if err != nil {
-		db.logger.Error("Error while batch inserting fitconners", zap.Error(err))
-		return err
+		db.logger.Debugw("insert query", zap.String("query", insertFitconnerQuery))
+		db.logger.Debugw("Fitconner validated", zap.Any("fitconner", fc))
+		_, err := db.db.NamedExec(insertFitconnerQuery, fc)
+		if err != nil {
+			db.logger.Errorw("Error while batch inserting fitconners", zap.Error(err))
+			return err
+		}
 	}
 
 	db.logger.Info("Successfully batch-inserted fitconners")
@@ -171,4 +175,10 @@ func (db *DB) ValidateId(id string) error {
 
 func (db *DB) CloseDB() {
 	db.db.Close()
+}
+
+func (db *DB) GetAllFitconners(fcs *[]fitconner.Fitconner) {
+	db.db.Select(&fcs, "SELECT * FROM fitconners;")
+
+	db.logger.Debugw("Fitconners found", zap.Any("fitconners", fcs))
 }

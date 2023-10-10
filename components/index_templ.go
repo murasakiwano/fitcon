@@ -137,7 +137,7 @@ func UserTable(fc fitconner.Fitconner) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</th><th class=\"p-5 bg-sky-600 rounded-tl-lg\" rowspan=\"2\">")
+		_, err = templBuffer.WriteString("</th><th class=\"p-5 bg-sky-600\" rowspan=\"2\">")
 		if err != nil {
 			return err
 		}
@@ -146,7 +146,7 @@ func UserTable(fc fitconner.Fitconner) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</th><th class=\"p-5 bg-sky-600 rounded-tl-lg\" rowspan=\"2\">")
+		_, err = templBuffer.WriteString("</th><th class=\"p-5 bg-sky-600\" rowspan=\"2\">")
 		if err != nil {
 			return err
 		}
@@ -155,7 +155,7 @@ func UserTable(fc fitconner.Fitconner) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</th><th class=\"p-5 bg-sky-600 rounded-tl-lg\" rowspan=\"2\">")
+		_, err = templBuffer.WriteString("</th><th class=\"p-5 bg-sky-600\" rowspan=\"2\">")
 		if err != nil {
 			return err
 		}
