@@ -1,0 +1,13 @@
+package components
+
+templ Home() {
+	<div id="card" class="container mx-auto">
+		<div class="mx-auto max-w-xl rounded-lg bg-white p-6 shadow-xl dark:bg-gray-700">
+			<h1 class="mb-4 text-2xl font-semibold text-gray-700 dark:text-gray-50">Insira sua matrícula</h1>
+			<form id="user-id-form" method="GET" hx-get="/users" hx-target="#card">
+				<div class="mb-4"><input type="text" name="matricula" placeholder="C012345" class="w-full rounded-md border p-2 dark:border-none dark:bg-gray-800 dark:text-gray-300 dark:shadow-sm"/></div>
+				<div><button type="submit" class="rounded-md bg-orange-600 px-4 py-2 text-white hover:bg-orange-700">Ver Metas</button></div>
+			</form>
+		</div>
+	</div>
+}

@@ -1,0 +1,99 @@
+package components
+
+import "github.com/murasakiwano/fitcon/fitconner"
+
+templ UserTable(fc fitconner.FitConner) {
+	<div id="card" class="container mx-auto dark:bg-gray-700">
+		<div class="mx-auto max-w-xl overflow-hidden rounded-lg bg-white shadow-xl dark:bg-gray-700">
+			<div class="flex items-center justify-between p-6">
+				<h1 class="text-xl font-semibold text-gray-700 dark:text-gray-100">Suas metas no FitCon</h1>
+				<img src="path_to_your_logo.png" alt="Logo" class="h-12 w-auto"/>
+			</div>
+			<table class="min-w-full divide-y divide-gray-200"><tbody class="bg-gray-50 dark:bg-gray-700">
+	<tr>
+		<td class="whitespace-nowrap px-6 py-4">
+			<div class="text-sm font-medium text-gray-900 dark:text-gray-50">Matrícula</div>
+		</td>
+		<td></td>
+		<td class="whitespace-nowrap px-6 py-4">
+			<div class="text-sm text-gray-500 dark:text-gray-300">{ fc.ID }</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="whitespace-nowrap px-6 py-4">
+			<div class="text-sm font-medium text-gray-900 dark:text-gray-50">Equipe</div>
+		</td>
+		<td></td>
+		<td class="whitespace-nowrap px-6 py-4">
+			<div class="text-sm text-gray-500 dark:text-gray-300">{ fc.TeamName }</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="whitespace-nowrap px-6 py-4">
+			<div class="text-sm font-medium text-gray-900 dark:text-gray-50">Nome</div>
+		</td>
+		<td></td>
+		<td class="whitespace-nowrap px-6 py-4">
+			<div class="text-sm text-gray-500 dark:text-gray-300">{ fc.Name }</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="whitespace-nowrap px-6 py-4">
+			<div class="text-sm font-medium text-gray-900 dark:text-gray-50">Equipe</div>
+		</td>
+		<td></td>
+		<td class="whitespace-nowrap px-6 py-4">
+			<div class="text-sm text-gray-500 dark:text-gray-300">{ fc.TeamName }</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="whitespace-nowrap px-6 py-4" rowspan="2">
+			<div class="text-sm font-medium text-gray-900 dark:text-gray-50">Meta 1</div>
+		</td>
+		<td class="whitespace-nowrap px-6 py-4">
+			<div class="text-sm text-gray-500 dark:text-gray-300">Percentual de Gordura</div>
+		</td>
+		<td class="whitespace-nowrap px-6 py-4">
+			<div class="text-sm text-gray-500 dark:text-gray-300">{ fc.Goal1FatPercentage }</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="whitespace-nowrap px-6 py-4">
+			<div class="text-sm text-gray-500 dark:text-gray-300">Massa Magra</div>
+		</td>
+		<td class="whitespace-nowrap px-6 py-4">
+			<div class="text-sm text-gray-500 dark:text-gray-300">{ fc.Goal1LeanMass }</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="whitespace-nowrap px-6 py-4" rowspan="3">
+			<div class="text-sm font-medium text-gray-900 dark:text-gray-50">Meta 2</div>
+		</td>
+		<td class="whitespace-nowrap px-6 py-4">
+			<div class="dark:text-gray-3000 text-sm text-gray-50">Gordura Visceral</div>
+		</td>
+		<td class="whitespace-nowrap px-6 py-4">
+			<div class="text-sm text-gray-500 dark:text-gray-300">{ fc.Goal2VisceralFat }</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="whitespace-nowrap px-6 py-4">
+			<div class="text-sm text-gray-500 dark:text-gray-300">Gordura Corporal</div>
+		</td>
+		<td class="whitespace-nowrap px-6 py-4">
+			<div class="text-sm text-gray-500 dark:text-gray-300">{ fc.Goal2FatPercentage }</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="whitespace-nowrap px-6 py-4">
+			<div class="text-sm text-gray-500 dark:text-gray-300">Massa Magra</div>
+		</td>
+		<td class="whitespace-nowrap px-6 py-4">
+			<div class="text-sm text-gray-500 dark:text-gray-300">{ fc.Goal2LeanMass }</div>
+		</td>
+	</tr>
+</tbody></table>
+		</div>
+		<div class="p-6"><a hx-get="/home" hx-target="#card" class="inline-flex items-center rounded-md border border-transparent bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-700">← Voltar </a></div>
+	</div>
+}

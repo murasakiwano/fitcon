@@ -1,83 +1,20 @@
 package components
 
-import (
-	"fmt"
-	"github.com/murasakiwano/fitcon/fitconner"
-)
-
-templ Index() {
+templ Index(comp templ.Component) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
-			<title>Metas Fitcon</title>
+			<title>Metas FitCon</title>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<link href="/css/output.css" rel="stylesheet"/>
 			<script src="/assets/js/htmx.min.js"></script>
 		</head>
-		<body class="dark:bg-zinc-800">
-			<div id="main-container" class="md:container md:mx-auto prose dark:prose-invert lg:prose-xl py-10 min-w-[90%]">
-				<h1 class="text-center">Metas Fitcon</h1>
-				<br/>
-				@getParticipantButton()
+		<body class="bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-100">
+			<div class="mx-auto mt-8 mb-8 text-center text-3xl font-bold text-gray-700 dark:text-gray-50">
+				<h1>FitCon - Metas</h1>
 			</div>
+			{! comp }
 		</body>
 	</html>
-}
-
-templ getParticipantButton() {
-	<form class="w-full max-w-sm mx-auto" method="get" hx-get="/users" hx-swap="outerHTML"><label class="block uppercase tracking-wide text-gray-700 dark:text-zinc-200 text-xs font-bold mb-2">
-	Insira sua matrícula
-	<div class="flex items-center border-b border-indigo-500 py-2"><input class="placeholder:text-zinc-500 placeholder:italic appearance-none bg-transparent border-none w-full mr-3 py-1 px-2 leading-tight focus:border-none rounded-md text-zinc-700 dark:text-zinc-300" type="text" placeholder="C012345" name="matricula" aria-label="Matrícula"/><button class="flex-shrink-0 bg-indigo-500 hover:bg-indigo-700 border-indigo-500 hover:border-indigo-700 text-sm border-4 text-white py-1 px-2 rounded" type="submit">Buscar</button></div>
-</label></form>
-}
-
-templ UserTable(fc fitconner.Fitconner) {
-	<div class="space-x-5 mx-2 overflow-x-auto min-w-[100%]">
-		<table class="drop-shadow-2xl bg-white dark:bg-zinc-600 rounded-lg text-center">
-			<thead class="uppercase">
-				<tr>
-					<th class="p-5 bg-sky-600 rounded-tl-lg" rowspan="2">Matrícula</th>
-					<th class="p-5 bg-sky-600" rowspan="2">Número da Equipe</th>
-					<th class="p-5 bg-sky-600" rowspan="2">Nome da Equipe</th>
-					<th class="p-5 bg-sky-600" rowspan="2">Nome</th>
-					<th class="p-5 bg-sky-600" colspan="2">Meta 1</th>
-					<th class="p-5 bg-sky-600 rounded-tr-lg" colspan="3">Meta 2</th>
-				</tr>
-				<tr>
-					<th class="p-3 bg-sky-700">Percentual de Gordura</th>
-					<th class="p-3 bg-sky-700">Massa Magra</th>
-					<th class="p-3 bg-sky-700">Gordura Visceral</th>
-					<th class="p-3 bg-sky-700">Gordura Corporal</th>
-					<th class="p-3 bg-sky-700">Massa Magra</th>
-				</tr>
-			</thead>
-			<tr>
-				<td class="text-center p-3 bg-zinc-700 font-medium rounded-bl-lg">{ fc.ID }</td>
-				<td class="text-center p-3 bg-zinc-700 font-medium">{ fmt.Sprintf("%v", fc.TeamNumber) }</td>
-				<td class="text-center p-3 bg-zinc-700 font-medium">{ fc.TeamName }</td>
-				<td class="text-center p-3 bg-zinc-700 font-medium">{ fc.Name }</td>
-				<td class="text-center p-3 bg-zinc-700">{ fc.Goal1FatPercentage }</td>
-				<td class="text-center p-3 bg-zinc-700">{ fc.Goal1LeanMass }</td>
-				<td class="text-center p-3 bg-zinc-700">{ fc.Goal2VisceralFat }</td>
-				<td class="text-center p-3 bg-zinc-700">{ fc.Goal2FatPercentage }</td>
-				<td class="text-center p-3 bg-zinc-700 rounded-br-lg">{ fc.Goal2LeanMass }</td>
-			</tr>
-		</table>
-		<button hx-get="/" hx-target="#main-container" class="font-medium hover:underline p-0 transition-all">Voltar</button>
-	</div>
-}
-
-templ UserNotFound(matricula string) {
-	<div class="w-full max-w-sm mx-auto">
-		<p class="mx-auto">Participante com matrícula { fmt.Sprintf("%v ", matricula) }não foi encontrado</p>
-		<button hx-get="/" hx-target="#main-container" class="font-medium hover:underline p-0 transition-all">Voltar</button>
-	</div>
-}
-
-templ InvalidUser(matricula string) {
-	<div class="w-full max-w-sm mx-auto">
-		<p class="mx-auto">A matrícula { fmt.Sprintf("%v ", matricula) }é inválida</p>
-		<button hx-get="/" hx-target="#main-container" class="font-medium hover:underline p-0 transition-all">Voltar</button>
-	</div>
 }

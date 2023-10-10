@@ -44,6 +44,7 @@ func Serve(h *handler.Handler) {
 
 	e.GET("/", h.GetIndex)
 	e.GET("/users", h.GetUser)
+	e.GET("/home", h.GetHome)
 	e.Logger.SetLevel(log.DEBUG)
 	e.Logger.Fatal(e.Start(":1323"))
 }

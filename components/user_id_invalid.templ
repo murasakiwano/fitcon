@@ -1,0 +1,11 @@
+package components
+
+templ UserIdInvalid(id string) {
+	<div id="card" class="container mx-auto">
+		<div class="mx-auto max-w-xl rounded-lg p-6 text-center shadow-xl">
+			<h1 class="mb-4 text-2xl font-semibold">Matrícula inválida</h1>
+			<p class="mb-6 text-gray-500 dark:text-gray-300">O formato da matrícula é inválido. Por favor insira uma matrícula válida.</p>
+			<a hx-get="/home" hx-target="#card" class="text-orange-600 hover:underline">Retornar à página inicial</a>
+		</div>
+	</div>
+}

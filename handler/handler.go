@@ -30,7 +30,7 @@ func (h *Handler) GetUser(c echo.Context) error {
 
 	if err := h.db.ValidateId(id); err != nil {
 		h.log.Error(err)
-		return components.InvalidUser(id).Render(context.Background(), c.Response().Writer)
+		return components.UserIdInvalid(id).Render(context.Background(), c.Response().Writer)
 	}
 
 	fc, err := h.db.GetFitConner(id)
@@ -48,7 +48,16 @@ func (h *Handler) GetUser(c echo.Context) error {
 }
 
 func (h *Handler) GetIndex(c echo.Context) error {
-	if err := components.Index().Render(c.Request().Context(), c.Response().Writer); err != nil {
+	if err := components.Index(components.Home()).Render(c.Request().Context(), c.Response().Writer); err != nil {
+		h.log.Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func (h *Handler) GetHome(c echo.Context) error {
+	if err := components.Home().Render(c.Request().Context(), c.Response().Writer); err != nil {
 		h.log.Error(err)
 		return err
 	}
@@ -57,7 +66,7 @@ func (h *Handler) GetIndex(c echo.Context) error {
 }
 
 func (h *Handler) CreateUser(c echo.Context) error {
-	u := new(fitconner.Fitconner)
+	u := new(fitconner.FitConner)
 	if err := c.Bind(u); err != nil {
 		return err
 	}

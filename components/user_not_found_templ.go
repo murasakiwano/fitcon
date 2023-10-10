@@ -9,7 +9,7 @@ import "context"
 import "io"
 import "bytes"
 
-func Index(comp templ.Component) templ.Component {
+func UserNotFound(id string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
 		templBuffer, templIsBuffer := w.(*bytes.Buffer)
 		if !templIsBuffer {
@@ -22,42 +22,44 @@ func Index(comp templ.Component) templ.Component {
 			var_1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, err = templBuffer.WriteString("<!doctype html><html lang=\"en\"><head><title>")
+		_, err = templBuffer.WriteString("<div id=\"card\" class=\"mx-auto max-w-xl rounded-lg bg-gray-100 p-6 text-center shadow-xl dark:bg-gray-700\"><h1 class=\"mb-4 text-2xl font-semibold dark:text-gray-50\">")
 		if err != nil {
 			return err
 		}
-		var_2 := `Metas FitCon`
+		var_2 := `Usuário Não Encontrado`
 		_, err = templBuffer.WriteString(var_2)
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"/css/output.css\" rel=\"stylesheet\"><script src=\"/assets/js/htmx.min.js\">")
+		_, err = templBuffer.WriteString("</h1><p class=\"mb-6 text-gray-500 dark:text-gray-300\">")
 		if err != nil {
 			return err
 		}
-		var_3 := ``
+		var_3 := `Não conseguimos encontrar um usuário com matrícula `
 		_, err = templBuffer.WriteString(var_3)
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</script></head><body class=\"bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-100\"><div class=\"mx-auto mt-8 mb-8 text-center text-3xl font-bold text-gray-700 dark:text-gray-50\"><h1>")
+		var var_4 string = id
+		_, err = templBuffer.WriteString(templ.EscapeString(var_4))
 		if err != nil {
 			return err
 		}
-		var_4 := `FitCon - Metas`
-		_, err = templBuffer.WriteString(var_4)
+		var_5 := `. Por favor tente de novo.`
+		_, err = templBuffer.WriteString(var_5)
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</h1></div>")
+		_, err = templBuffer.WriteString("</p><a hx-get=\"/home\" hx-target=\"card\" class=\"text-orange-600 hover:underline\">")
 		if err != nil {
 			return err
 		}
-		err = comp.Render(ctx, templBuffer)
+		var_6 := `Return to Homepage`
+		_, err = templBuffer.WriteString(var_6)
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</body></html>")
+		_, err = templBuffer.WriteString("</a></div>")
 		if err != nil {
 			return err
 		}

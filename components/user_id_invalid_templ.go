@@ -9,7 +9,7 @@ import "context"
 import "io"
 import "bytes"
 
-func Index(comp templ.Component) templ.Component {
+func UserIdInvalid(id string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
 		templBuffer, templIsBuffer := w.(*bytes.Buffer)
 		if !templIsBuffer {
@@ -22,42 +22,34 @@ func Index(comp templ.Component) templ.Component {
 			var_1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, err = templBuffer.WriteString("<!doctype html><html lang=\"en\"><head><title>")
+		_, err = templBuffer.WriteString("<div id=\"card\" class=\"container mx-auto\"><div class=\"mx-auto max-w-xl rounded-lg p-6 text-center shadow-xl\"><h1 class=\"mb-4 text-2xl font-semibold\">")
 		if err != nil {
 			return err
 		}
-		var_2 := `Metas FitCon`
+		var_2 := `Matrícula inválida`
 		_, err = templBuffer.WriteString(var_2)
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"/css/output.css\" rel=\"stylesheet\"><script src=\"/assets/js/htmx.min.js\">")
+		_, err = templBuffer.WriteString("</h1><p class=\"mb-6 text-gray-500 dark:text-gray-300\">")
 		if err != nil {
 			return err
 		}
-		var_3 := ``
+		var_3 := `O formato da matrícula é inválido. Por favor insira uma matrícula válida.`
 		_, err = templBuffer.WriteString(var_3)
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</script></head><body class=\"bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-100\"><div class=\"mx-auto mt-8 mb-8 text-center text-3xl font-bold text-gray-700 dark:text-gray-50\"><h1>")
+		_, err = templBuffer.WriteString("</p><a hx-get=\"/home\" hx-target=\"#card\" class=\"text-orange-600 hover:underline\">")
 		if err != nil {
 			return err
 		}
-		var_4 := `FitCon - Metas`
+		var_4 := `Retornar à página inicial`
 		_, err = templBuffer.WriteString(var_4)
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</h1></div>")
-		if err != nil {
-			return err
-		}
-		err = comp.Render(ctx, templBuffer)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</body></html>")
+		_, err = templBuffer.WriteString("</a></div></div>")
 		if err != nil {
 			return err
 		}

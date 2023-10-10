@@ -26,7 +26,7 @@ create table if not exists %s (
 );`, FitConnersTable)
 	fitconnerDrop        = fmt.Sprintf("drop table %s;", FitConnersTable)
 	getQuery             = fmt.Sprintf("SELECT * FROM %s WHERE id=$1", FitConnersTable)
-	insertFitconnerQuery = fmt.Sprintf(`
+	insertFitConnerQuery = fmt.Sprintf(`
 INSERT INTO %s (
 	id,
 	name,
@@ -98,8 +98,8 @@ func (db *DB) Drop() {
 }
 
 // get a fitconner by id (matricula)
-func (db *DB) GetFitConner(id string) (*fitconner.Fitconner, error) {
-	var fitconner fitconner.Fitconner
+func (db *DB) GetFitConner(id string) (*fitconner.FitConner, error) {
+	var fitconner fitconner.FitConner
 
 	db.logger.Debugw("Id is", zap.String("matricula", id))
 	if err := db.ValidateId(id); err != nil {
@@ -113,36 +113,36 @@ func (db *DB) GetFitConner(id string) (*fitconner.Fitconner, error) {
 		return nil, err
 	}
 
-	db.logger.Debugw("Fitconner found", zap.String("id", fitconner.ID))
+	db.logger.Debugw("FitConner found", zap.String("id", fitconner.ID))
 	return &fitconner, nil
 }
 
 // insert a fitconner into the database
-func (db *DB) CreateFitConner(fc fitconner.Fitconner) error {
+func (db *DB) CreateFitConner(fc fitconner.FitConner) error {
 	if err := db.ValidateId(fc.ID); err != nil {
 		db.logger.Errorw("Error while validating fitconner", zap.Error(err))
 		return err
 	}
-	_, err := db.db.NamedExec(insertFitconnerQuery, fc)
+	_, err := db.db.NamedExec(insertFitConnerQuery, fc)
 	if err != nil {
 		db.logger.Errorw("Error while creating fitconner", zap.Error(err))
 		return err
 	}
 
-	db.logger.Infow("Fitconner created", zap.String("id", fc.ID))
+	db.logger.Infow("FitConner created", zap.String("id", fc.ID))
 	return nil
 }
 
 // batch insert fitconners into the database
-func (db *DB) BatchInsert(fcs []fitconner.Fitconner) error {
+func (db *DB) BatchInsert(fcs []fitconner.FitConner) error {
 	for _, fc := range fcs {
 		if err := db.ValidateId(fc.ID); err != nil {
 			db.logger.Errorw("Error while validating fitconner", zap.Error(err))
 			return err
 		}
-		db.logger.Debugw("insert query", zap.String("query", insertFitconnerQuery))
-		db.logger.Debugw("Fitconner validated", zap.Any("fitconner", fc))
-		_, err := db.db.NamedExec(insertFitconnerQuery, fc)
+		db.logger.Debugw("insert query", zap.String("query", insertFitConnerQuery))
+		db.logger.Debugw("FitConner validated", zap.Any("fitconner", fc))
+		_, err := db.db.NamedExec(insertFitConnerQuery, fc)
 		if err != nil {
 			db.logger.Errorw("Error while batch inserting fitconners", zap.Error(err))
 			return err
@@ -177,8 +177,8 @@ func (db *DB) CloseDB() {
 	db.db.Close()
 }
 
-func (db *DB) GetAllFitconners(fcs *[]fitconner.Fitconner) {
+func (db *DB) GetAllFitConners(fcs *[]fitconner.FitConner) {
 	db.db.Select(&fcs, "SELECT * FROM fitconners;")
 
-	db.logger.Debugw("Fitconners found", zap.Any("fitconners", fcs))
+	db.logger.Debugw("FitConners found", zap.Any("fitconners", fcs))
 }

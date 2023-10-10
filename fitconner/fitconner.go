@@ -1,6 +1,6 @@
 package fitconner
 
-type Fitconner struct {
+type FitConner struct {
 	TeamName           string `json:"teamName"  form:"teamName" db:"team_name"`
 	Name               string `json:"name"  form:"name" db:"name"`
 	ID                 string `json:"matricula"  form:"matricula" db:"id"`
@@ -22,10 +22,10 @@ func New(
 	g2LeanMass,
 	g2VisceralFat string,
 	teamNumber int,
-) *Fitconner {
+) *FitConner {
 	goals1 := buildGoals(g1FatPercentage, g1LeanMass, "")
 	goals2 := buildGoals(g2FatPercentage, g2LeanMass, g2VisceralFat)
-	return &Fitconner{
+	return &FitConner{
 		ID:                 id,
 		Name:               name,
 		TeamName:           teamName,

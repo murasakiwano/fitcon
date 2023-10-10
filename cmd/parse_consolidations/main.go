@@ -29,7 +29,7 @@ func main() {
 		return
 	}
 
-	fcs := make([]fitconner.Fitconner, 0)
+	fcs := make([]fitconner.FitConner, 0)
 	for idx, row := range rows[3:] {
 		if row[0] == "" {
 			row[0] = rows[idx+2][0]
@@ -37,7 +37,7 @@ func main() {
 		if row[1] == "" {
 			row[1] = rows[idx+2][1]
 		}
-		fitconner := unpackIntoFitconner(row)
+		fitconner := unpackIntoFitConner(row)
 		fcs = append(fcs, fitconner)
 	}
 
@@ -46,7 +46,7 @@ func main() {
 	}
 }
 
-func unpackIntoFitconner(row []string) fitconner.Fitconner {
+func unpackIntoFitConner(row []string) fitconner.FitConner {
 	teamNumber, err := strconv.Atoi(row[0])
 	if err != nil {
 		fmt.Println(err)
@@ -59,7 +59,7 @@ func unpackIntoFitconner(row []string) fitconner.Fitconner {
 		}
 	}
 
-	return fitconner.Fitconner{
+	return fitconner.FitConner{
 		TeamNumber:         teamNumber,
 		TeamName:           row[1],
 		ID:                 row[2],
@@ -72,7 +72,7 @@ func unpackIntoFitconner(row []string) fitconner.Fitconner {
 	}
 }
 
-func populateDB(fcs []fitconner.Fitconner) error {
+func populateDB(fcs []fitconner.FitConner) error {
 	logger, _ := zap.NewDevelopment()
 	sugar := logger.Sugar()
 	fitconners, err := db.New(sugar, "../../fitcon.db")

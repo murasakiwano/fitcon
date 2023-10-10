@@ -56,7 +56,7 @@ func init() {
 	h = New(sugar, fcs)
 }
 
-func TestGetFitconner(t *testing.T) {
+func TestGetFitConner(t *testing.T) {
 	// Setup
 	h.db.Create()
 	defer h.db.Drop()
