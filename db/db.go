@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 
@@ -73,10 +74,7 @@ var (
 
 // creates database and returns a new DB
 func New(logger *zap.SugaredLogger, dbName string) (*DB, error) {
-	if dbName == "" {
-		dbName = DbName
-	} // this Pings the database trying to connect
-	db, err := sqlx.Connect("sqlite3", dbName)
+	db, err := sqlx.Connect("sqlite3", os.Getenv("DATABASE_URL"))
 	if err != nil {
 		logger.Errorw("Error connecting to the database", zap.Error(err))
 	}
