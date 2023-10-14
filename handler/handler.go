@@ -23,6 +23,30 @@ func New(log *zap.SugaredLogger, fcs *db.DB) Handler {
 	}
 }
 
+func (h *Handler) CreateUser(c echo.Context) error {
+	u := new(fitconner.FitConner)
+	if err := c.Bind(u); err != nil {
+		return err
+	}
+
+	h.log.Debugw("Received", zap.Any("user", u))
+
+	if err := h.db.CreateFitConner(*u); err != nil {
+		h.log.Error(err)
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	r := struct {
+		Id   string `json:"matricula"`
+		Name string `json:"name"`
+	}{
+		Id:   u.ID,
+		Name: u.Name,
+	}
+
+	return c.JSON(http.StatusCreated, r)
+}
+
 func (h *Handler) GetUser(c echo.Context) error {
 	h.log.Debugw("Request", zap.Any("path", c.Request().URL.Path), zap.Any("context", c.Request().Context()), zap.Any("body", c.Request().Body))
 	id := c.QueryParam("matricula")
@@ -65,24 +89,11 @@ func (h *Handler) GetHome(c echo.Context) error {
 	return nil
 }
 
-func (h *Handler) CreateUser(c echo.Context) error {
-	u := new(fitconner.FitConner)
-	if err := c.Bind(u); err != nil {
+func (h *Handler) GetCreate(c echo.Context) error {
+	if err := components.Index(components.CreateUser()).Render(c.Request().Context(), c.Response().Writer); err != nil {
+		h.log.Error(err)
 		return err
 	}
 
-	if err := h.db.CreateFitConner(*u); err != nil {
-		h.log.Error(err)
-		return c.JSON(http.StatusInternalServerError, err)
-	}
-
-	r := struct {
-		Id   string `json:"matricula"`
-		Name string `json:"name"`
-	}{
-		Id:   u.ID,
-		Name: u.Name,
-	}
-
-	return c.JSON(http.StatusCreated, r)
+	return nil
 }

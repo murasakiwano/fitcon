@@ -1,0 +1,141 @@
+package components
+
+templ CreateUser() {
+  <div class="container mx-auto">
+    <div
+      class="mx-auto max-w-xl rounded-lg bg-white p-6 shadow-xl dark:bg-gray-700"
+    >
+      <h1 class="mb-4 text-2xl font-semibold text-gray-700 dark:text-gray-50">
+        Create New User
+      </h1>
+      <form id="create-user-form" action="users" method="POST">
+        <div class="mb-4">
+          <label
+            for="fullName"
+            class="block text-sm font-medium text-gray-600 dark:text-gray-100"
+            >Nome Completo</label><input
+            type="text"
+            id="fullName"
+            name="fullName"
+            placeholder="John Doe"
+            class="mt-1 w-full rounded-md border p-2 dark:bg-gray-800 dark:text-gray-300 dark:shadow-sm"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label
+            for="matricula"
+            class="block text-sm font-medium text-gray-600 dark:text-gray-100"
+            >Matrícula</label><input
+            type="text"
+            id="matricula"
+            name="matricula"
+            placeholder="C012345"
+            class="mt-1 w-full rounded-md border p-2 dark:bg-gray-800 dark:text-gray-300 dark:shadow-sm"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label
+            for="goal1FatPercentage"
+            class="block text-sm font-medium text-gray-600 dark:text-gray-100"
+            >Meta 1 - Percentual de Gordura</label><input
+            type="text"
+            id="goal1FatPercentage"
+            name="goal1FatPercentage"
+            placeholder="Meta"
+            class="mt-1 w-full rounded-md border p-2 dark:bg-gray-800 dark:text-gray-300 dark:shadow-sm"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label
+            for="goal1LeanMass"
+            class="block text-sm font-medium text-gray-600 dark:text-gray-100"
+            >Meta 1 - Massa Magra</label><input
+            type="text"
+            id="goal1LeanMass"
+            name="goal1LeanMass"
+            placeholder="Meta"
+            class="mt-1 w-full rounded-md border p-2 dark:bg-gray-800 dark:text-gray-300 dark:shadow-sm"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label
+            for="goal2FatPercentage"
+            class="block text-sm font-medium text-gray-600 dark:text-gray-100"
+            >Meta 2 - Percentual de Gordura</label><input
+            type="text"
+            id="goal2FatPercentage"
+            name="goal2FatPercentage"
+            placeholder="Meta"
+            class="mt-1 w-full rounded-md border p-2 dark:bg-gray-800 dark:text-gray-300 dark:shadow-sm"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label
+            for="goal2LeanMass"
+            class="block text-sm font-medium text-gray-600 dark:text-gray-100"
+            >Meta 2 - Massa Magra</label><input
+            type="text"
+            id="goal2LeanMass"
+            name="goal2LeanMass"
+            placeholder="Meta"
+            class="mt-1 w-full rounded-md border p-2 dark:bg-gray-800 dark:text-gray-300 dark:shadow-sm"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label
+            for="goal2VisceralFat"
+            class="block text-sm font-medium text-gray-600 dark:text-gray-100"
+            >Meta 2 - Gordura Visceral</label><input
+            type="text"
+            id="goal2VisceralFat"
+            name="goal2VisceralFat"
+            placeholder="Meta"
+            class="mt-1 w-full rounded-md border p-2 dark:bg-gray-800 dark:text-gray-300 dark:shadow-sm"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label
+            for="teamName"
+            class="block text-sm font-medium text-gray-600 dark:text-gray-100"
+            >Equipe</label><input
+            type="text"
+            id="teamName"
+            name="teamName"
+            placeholder="Nome da Equipe"
+            class="mt-1 w-full rounded-md border p-2 dark:bg-gray-800 dark:text-gray-300 dark:shadow-sm"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label
+            for="teamNumber"
+            class="block text-sm font-medium text-gray-600 dark:text-gray-100"
+            >Número da Equipe</label><input
+            type="text"
+            id="teamNumber"
+            name="teamNumber"
+            placeholder="Número da Equipe"
+            class="mt-1 w-full rounded-md border p-2 dark:bg-gray-800 dark:text-gray-300 dark:shadow-sm"
+            required
+          />
+        </div>
+        <div class="mt-6">
+          <button
+            type="submit"
+            class="rounded-md bg-orange-600 px-4 py-2 text-white hover:bg-orange-700"
+          >
+            Criar Participante
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+

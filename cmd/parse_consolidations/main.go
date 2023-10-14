@@ -2,16 +2,17 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+	"net/url"
 	"strconv"
 
-	"github.com/murasakiwano/fitcon/db"
 	"github.com/murasakiwano/fitcon/fitconner"
 	"github.com/xuri/excelize/v2"
 	"go.uber.org/zap"
 )
 
 func main() {
-	f, err := excelize.OpenFile("Consolidacoes.xlsx")
+	f, err := excelize.OpenFile("03 Consolidação Metas.xlsx")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -75,18 +76,25 @@ func unpackIntoFitConner(row []string) fitconner.FitConner {
 func populateDB(fcs []fitconner.FitConner) error {
 	logger, _ := zap.NewDevelopment()
 	sugar := logger.Sugar()
-	fitconners, err := db.New(sugar, "../../fitcon.db")
-	fitconners.Drop()
-	fitconners.Create()
-	defer fitconners.CloseDB()
-	if err != nil {
-		sugar.Errorw("error", zap.Error(err))
-		return err
-	}
 
-	if err := fitconners.BatchInsert(fcs); err != nil {
-		sugar.Errorw("error", zap.Error(err))
-		return err
+	for _, fitConner := range fcs {
+		sugar.Infow("creating fitConner...", zap.Object("fitConner", fitConner))
+		resp, err := http.PostForm("http://localhost:1323/users", url.Values{
+			"teamName":           {fitConner.TeamName},
+			"name":               {fitConner.Name},
+			"matricula":          {fitConner.ID},
+			"goal1FatPercentage": {fitConner.Goal1FatPercentage},
+			"goal1LeanMass":      {fitConner.Goal1LeanMass},
+			"goal2FatPercentage": {fitConner.Goal2FatPercentage},
+			"goal2LeanMass":      {fitConner.Goal2LeanMass},
+			"goal2VisceralFat":   {fitConner.Goal2VisceralFat},
+		})
+		if err != nil {
+			sugar.Errorw("error creating fitConner", zap.Error(err))
+			return err
+		}
+
+		sugar.Infow("successfully created fitConner", zap.Object("fitConner", fitConner), zap.Any("response", resp))
 	}
 
 	return nil

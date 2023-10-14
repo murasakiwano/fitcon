@@ -50,11 +50,11 @@ func UserNotFound(id string) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</p><a hx-get=\"/home\" hx-target=\"card\" class=\"text-orange-600 hover:underline\">")
+		_, err = templBuffer.WriteString("</p><a href=\"/\" hx-target=\"card\" class=\"text-orange-600 hover:underline\">")
 		if err != nil {
 			return err
 		}
-		var_6 := `Return to Homepage`
+		var_6 := `Retornar à página inicial`
 		_, err = templBuffer.WriteString(var_6)
 		if err != nil {
 			return err

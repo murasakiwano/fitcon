@@ -1,5 +1,7 @@
 package fitconner
 
+import "go.uber.org/zap/zapcore"
+
 type FitConner struct {
 	TeamName           string `json:"teamName"  form:"teamName" db:"team_name"`
 	Name               string `json:"name"  form:"name" db:"name"`
@@ -60,4 +62,19 @@ func buildGoals(fatPercentage string, leanMass string, visceralFat string) map[s
 		"leanMass":      lm,
 		"visceralFat":   vf,
 	}
+}
+
+// implement ObjectMarshaler for use with zap
+func (fc FitConner) MarshalLogObject(oe zapcore.ObjectEncoder) error {
+	oe.AddString("matricula", fc.ID)
+	oe.AddString("teamName", fc.TeamName)
+	oe.AddInt("teamNumber", fc.TeamNumber)
+	oe.AddString("name", fc.Name)
+	oe.AddString("goal1FatPercentage", fc.Goal1FatPercentage)
+	oe.AddString("goal1LeanMass", fc.Goal1LeanMass)
+	oe.AddString("goal2FatPercentage", fc.Goal2FatPercentage)
+	oe.AddString("goal2LeanMass", fc.Goal2LeanMass)
+	oe.AddString("goal2VisceralFat", fc.Goal2VisceralFat)
+
+	return nil
 }

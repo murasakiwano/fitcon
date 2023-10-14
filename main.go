@@ -45,6 +45,8 @@ func Serve(h *handler.Handler) {
 	e.GET("/", h.GetIndex)
 	e.GET("/users", h.GetUser)
 	e.GET("/home", h.GetHome)
+	e.GET("/create", h.GetCreate)
+	e.POST("/users", h.CreateUser)
 	e.Logger.SetLevel(log.DEBUG)
 	e.Logger.Fatal(e.Start(":1323"))
 }

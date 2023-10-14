@@ -139,7 +139,7 @@ func (db *DB) BatchInsert(fcs []fitconner.FitConner) error {
 			return err
 		}
 		db.logger.Debugw("insert query", zap.String("query", insertFitConnerQuery))
-		db.logger.Debugw("FitConner validated", zap.Any("fitconner", fc))
+		db.logger.Debugw("FitConner validated", zap.Object("fitconner", fc))
 		_, err := db.db.NamedExec(insertFitConnerQuery, fc)
 		if err != nil {
 			db.logger.Errorw("Error while batch inserting fitconners", zap.Error(err))
@@ -178,5 +178,5 @@ func (db *DB) CloseDB() {
 func (db *DB) GetAllFitConners(fcs *[]fitconner.FitConner) {
 	db.db.Select(&fcs, "SELECT * FROM fitconners;")
 
-	db.logger.Debugw("FitConners found", zap.Any("fitconners", fcs))
+	db.logger.Debugw("FitConners found", zap.Objects[fitconner.FitConner]("fitconners", *fcs))
 }

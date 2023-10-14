@@ -22,7 +22,7 @@ func UserIdInvalid(id string) templ.Component {
 			var_1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, err = templBuffer.WriteString("<div id=\"card\" class=\"container mx-auto\"><div class=\"mx-auto max-w-xl rounded-lg p-6 text-center shadow-xl\"><h1 class=\"mb-4 text-2xl font-semibold\">")
+		_, err = templBuffer.WriteString("<div id=\"card\" class=\"mx-auto max-w-xl rounded-lg bg-gray-100 p-6 text-center shadow-xl dark:bg-gray-700\" hx-swap=\"outerHTML\"><h1 class=\"mb-4 text-2xl font-semibold dark:text-gray-50\">")
 		if err != nil {
 			return err
 		}
@@ -40,7 +40,7 @@ func UserIdInvalid(id string) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</p><a hx-get=\"/home\" hx-target=\"#card\" class=\"text-orange-600 hover:underline\">")
+		_, err = templBuffer.WriteString("</p><a href=\"/\" hx-target=\"card\" class=\"text-orange-600 hover:underline\">")
 		if err != nil {
 			return err
 		}
@@ -49,7 +49,7 @@ func UserIdInvalid(id string) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</a></div></div>")
+		_, err = templBuffer.WriteString("</a></div>")
 		if err != nil {
 			return err
 		}
