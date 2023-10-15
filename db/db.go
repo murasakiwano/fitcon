@@ -74,9 +74,9 @@ var (
 
 // creates database and returns a new DB
 func New(logger *zap.SugaredLogger, dbName string) (*DB, error) {
-	db, err := sqlx.Connect("sqlite3", os.Getenv("DATABASE_URL"))
+	db, err := sqlx.Connect("sqlite3", os.Getenv("DATABASE_FILE"))
 	if err != nil {
-		logger.Errorw("Error connecting to the database", zap.Error(err))
+		logger.Errorw("Error connecting to the database", zap.String("dbFile", os.Getenv("DATABASE_URL")), zap.Error(err))
 	}
 
 	database := DB{db: db, logger: logger}
@@ -179,4 +179,16 @@ func (db *DB) GetAllFitConners(fcs *[]fitconner.FitConner) {
 	db.db.Select(&fcs, "SELECT * FROM fitconners;")
 
 	db.logger.Debugw("FitConners found", zap.Objects[fitconner.FitConner]("fitconners", *fcs))
+}
+
+func (db *DB) DeleteFitConner(id string) error {
+	fc, err := db.GetFitConner(id)
+	if err != nil {
+		db.logger.Error("Error retrieving fitconner", zap.String("id", id), zap.Error(err))
+		return err
+	}
+
+	db.db.MustExec("DELETE FROM fitconners WHERE id=?", fc.ID)
+
+	return nil
 }

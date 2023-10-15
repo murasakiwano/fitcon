@@ -6,23 +6,20 @@
 app = "metas-fitcon"
 primary_region = "gru"
 
-[build]
-  builder = "paketobuildpacks/builder:base"
-  buildpacks = ["gcr.io/paketo-buildpacks/go"]
-  [build.args]
-    BP_KEEP_FILES = "assets|img|components|internal|src"
-
 [env]
-  PORT = "8080"
+PORT = "8080"
 
 [http_service]
-  internal_port = 8080
-  force_https = true
-  auto_stop_machines = true
-  auto_start_machines = true
-  min_machines_running = 0
-  processes = ["app"]
+internal_port = 8080
+force_https = true
+auto_stop_machines = true
+auto_start_machines = true
+min_machines_running = 0
+[http_service.concurrency]
+type = "requests"
+soft_limit = 200
+hard_limit = 250
 
 [mounts]
-  source="fitcon_data"
-  destination="/data"
+source = "fitcon_data"
+destination = "/data"

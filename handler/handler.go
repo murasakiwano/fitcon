@@ -97,3 +97,17 @@ func (h *Handler) GetCreate(c echo.Context) error {
 
 	return nil
 }
+
+func (h *Handler) DeleteUser(c echo.Context) error {
+	h.log.Debugw("Request", zap.Any("path", c.Request().URL.Path), zap.Any("context", c.Request().Context()), zap.Any("body", c.Request().Body))
+	id := c.QueryParam("matricula")
+	h.log.Debugw("Got", zap.String("matricula", id))
+
+	err := h.db.DeleteFitConner(id)
+	if err != nil {
+		h.log.Error(err)
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusOK, id)
+}

@@ -79,7 +79,7 @@ func populateDB(fcs []fitconner.FitConner) error {
 
 	for _, fitConner := range fcs {
 		sugar.Infow("creating fitConner...", zap.Object("fitConner", fitConner))
-		resp, err := http.PostForm("http://localhost:1323/users", url.Values{
+		resp, err := http.PostForm("https://metas-fitcon.fly.dev/users", url.Values{
 			"teamName":           {fitConner.TeamName},
 			"name":               {fitConner.Name},
 			"matricula":          {fitConner.ID},
