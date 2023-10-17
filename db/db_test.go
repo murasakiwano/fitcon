@@ -8,6 +8,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/murasakiwano/fitcon/fitconner"
+	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 )
 
@@ -45,9 +46,10 @@ func TestInsertFitConner(t *testing.T) {
 	defaultSchema.Create()
 	defer defaultSchema.Drop()
 	db := DB{db: sldb, logger: logger.Sugar()}
-	fc := fitconner.New(
+	fc, _ := fitconner.New(
 		"C123456",
 		"John Doe",
+		"test-password1",
 		"Team 1",
 		"10",
 		"20",
@@ -79,11 +81,10 @@ func TestBatchInsertFitConner(t *testing.T) {
 	defer defaultSchema.Drop()
 	db := DB{db: sldb, logger: logger.Sugar()}
 
-	fcs := []fitconner.FitConner{
-		*fitconner.New("C234142", "Zeca Pagodinho", "Unidos da Brahma", "14", "42", "14", "18", "14", 1),
-		*fitconner.New("C234143", "Monkey D. Luffy", "Mugiwara", "4", "2", "1", "8", "1", 1),
-		*fitconner.New("C234144", "Roronoa Zoro", "Mugiwara", "2", "1", "-2", "-129", "-2", 1),
-	}
+	zecaP, _ := fitconner.New("C234142", "Zeca Pagodinho", "test-password1", "Unidos da Brahma", "14", "42", "14", "18", "14", 1)
+	monkeyD, _ := fitconner.New("C234143", "Monkey D. Luffy", "test-password2", "Mugiwara", "4", "2", "1", "8", "1", 1)
+	roroZ, _ := fitconner.New("C234144", "Roronoa Zoro", "test-password3", "Mugiwara", "2", "1", "-2", "-129", "-2", 1)
+	fcs := []fitconner.FitConner{*zecaP, *monkeyD, *roroZ}
 
 	err := db.BatchInsert(fcs)
 	if err != nil {
@@ -106,4 +107,37 @@ func TestBatchInsertFitConner(t *testing.T) {
 	if !reflect.DeepEqual(fcs, newFcs) {
 		t.Fatalf("Expected %v, got %v", fcs, newFcs)
 	}
+}
+
+func TestUpdateFitConner(t *testing.T) {
+	defaultSchema.Create()
+	defer defaultSchema.Drop()
+	db := DB{db: sldb, logger: logger.Sugar()}
+	fc, _ := fitconner.New(
+		"C123456",
+		"John Doe",
+		"test-password1",
+		"Team 1",
+		"10",
+		"20",
+		"30",
+		"40",
+		"50",
+		1,
+	)
+	err := db.CreateFitConner(*fc)
+	if err != nil {
+		t.Errorf("Error while creating fitconner: %v", err)
+	}
+
+	fields := map[string]string{
+		"goal2_lean_mass": "Aumentar 2kg",
+	}
+
+	updatedFc, err := db.UpdateFitConner("C123456", fields)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.Equal(t, "Aumentar 2kg", updatedFc.Goal2LeanMass)
 }

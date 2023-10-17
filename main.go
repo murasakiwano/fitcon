@@ -3,26 +3,28 @@ package main
 import (
 	"os"
 
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	"github.com/labstack/gommon/log"
 	"github.com/murasakiwano/fitcon/db"
 	"github.com/murasakiwano/fitcon/handler"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 func main() {
 	var logger zap.SugaredLogger
+	var cfg zap.Config
 
 	if os.Getenv("ENV") == "production" {
-		l, _ := zap.NewProduction()
+		cfg = zap.NewProductionConfig()
+		l, _ := cfg.Build()
 		logger = *l.Sugar()
 	} else {
-		l, _ := zap.NewDevelopment()
+		cfg := zap.NewDevelopmentConfig()
+		cfg.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+		l, _ := cfg.Build()
 		logger = *l.Sugar()
 	}
 
-	fcs, err := db.New(&logger, db.FitConnersTable)
+	fcs, err := db.New(&logger)
 	defer fcs.CloseDB()
 	if err != nil {
 		logger.Error(zap.Error(err))
@@ -31,20 +33,5 @@ func main() {
 
 	h := handler.New(&logger, fcs)
 
-	Serve(&h)
-}
-
-func Serve(h *handler.Handler) {
-	e := echo.New()
-	e.Use(middleware.Logger())
-	e.Static("/assets", "assets")
-	e.Static("/img", "img")
-	e.Static("/css", "css")
-	e.File("/favicon.ico", "favicon.ico")
-
-	e.GET("/", h.GetIndex)
-	e.GET("/users", h.GetUser)
-	e.GET("/home", h.GetHome)
-	e.Logger.SetLevel(log.DEBUG)
-	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
+	h.Serve()
 }

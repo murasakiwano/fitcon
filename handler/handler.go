@@ -2,6 +2,8 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -109,5 +111,41 @@ func (h *Handler) DeleteUser(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	return c.JSON(http.StatusOK, id)
+	res := c.JSON(http.StatusOK, fmt.Sprintf(`{"deleted":"%s"}`, id))
+	h.log.Debugw("Response", zap.Any("response", res))
+	return res
+}
+
+func (h *Handler) UpdateUser(c echo.Context) error {
+	params, err := c.FormParams()
+	if err != nil {
+		h.log.Error(zap.Error(err))
+		return err
+	}
+
+	id := params.Get("matricula")
+	if id == "" {
+		h.log.Error("No matricula provided")
+		return c.JSON(http.StatusBadRequest, "No matricula provided")
+	}
+
+	params.Del("matricula")
+
+	mapParams := make(map[string]string)
+	for k, v := range params {
+		mapParams[k] = v[0]
+	}
+
+	_, err = h.db.UpdateFitConner(id, mapParams)
+	if err != nil {
+		return err
+	}
+
+	jsonParams, err := json.Marshal(mapParams)
+	if err != nil {
+		h.log.Error("Error marshaling params", zap.Error(err))
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusOK, fmt.Sprintf(`{"matricula":"%s","updated":%s}`, id, jsonParams))
 }
