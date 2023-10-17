@@ -7,7 +7,6 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
-	"github.com/murasakiwano/fitcon/fitconner"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -29,8 +28,9 @@ func (h *Handler) Login(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)) != nil {
-		h.log.Error("Error: password does not match")
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		h.log.Error("Error: password does not match", zap.Error(err))
 		return echo.ErrUnauthorized
 	}
 
@@ -68,11 +68,11 @@ func (h *Handler) SignUp(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, zap.Error(err))
 	}
 
-	if fc.Password != "" {
+	if !fc.PasswordEmpty() {
 		return c.JSON(http.StatusConflict, "user already has a password")
 	}
 
-	fc.Password, err = fitconner.HashPassword(password)
+	err = fc.SetPassword(password)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, zap.Error(err))
 	}

@@ -36,7 +36,7 @@ func New(
 	g2VisceralFat string,
 	teamNumber int,
 ) (*FitConner, error) {
-	hash, err := HashPassword(password)
+	hash, err := hashPassword(password)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +97,25 @@ func (fc FitConner) MarshalLogObject(oe zapcore.ObjectEncoder) error {
 	return nil
 }
 
-func HashPassword(password string) (string, error) {
+func (fc *FitConner) ClearPassword() {
+	fc.Password = ""
+}
+
+func (fc *FitConner) SetPassword(password string) error {
+	hash, err := hashPassword(password)
+	if err != nil {
+		return err
+	}
+	fc.Password = string(hash)
+
+	return nil
+}
+
+func (fc FitConner) PasswordEmpty() bool {
+	return fc.Password == ""
+}
+
+func hashPassword(password string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		sugar.Error("error generating hash", zap.Error(err))

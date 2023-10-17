@@ -14,7 +14,7 @@ import (
 func TestSignUp(t *testing.T) {
 	h.db.Create()
 	defer h.db.Drop()
-	fc.Password = ""
+	fc.ClearPassword()
 	h.db.CreateFitConner(*fc)
 	e := echo.New()
 	f := make(url.Values)
@@ -31,12 +31,12 @@ func TestSignUp(t *testing.T) {
 	}
 }
 
-func TestLogsInCorrectly(t *testing.T) {
+func TestLogin(t *testing.T) {
 	// Setup
 	h.db.Create()
 	defer h.db.Drop()
 	fitConner := fc
-	fitConner.Password = "test-password1"
+	fitConner.SetPassword("test-password1")
 	h.db.CreateFitConner(*fitConner)
 	e := echo.New()
 	f := make(url.Values)
