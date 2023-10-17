@@ -1,0 +1,17 @@
+package components
+
+templ Login() {
+  @Container(inner("login", "/login", "Entrar"))
+}
+
+templ SignUp() {
+    @Container(inner("signup", "/signup", "Cadastrar"))
+}
+
+templ inner(id, action, buttonTitle string) {
+  <form id={ id } action={ action } method="POST">
+    @FormInput("username", "Matrícula", "text", "matricula", "matricula", "C012345", true)
+    @FormInput("password", "Senha", "password", "password", "password", "senha_secreta!", true)
+    @Button(buttonTitle)
+  </form>
+}

@@ -9,6 +9,8 @@ import "context"
 import "io"
 import "bytes"
 
+import "fmt"
+
 func UserNotFound(id string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
 		templBuffer, templIsBuffer := w.(*bytes.Buffer)
@@ -22,44 +24,7 @@ func UserNotFound(id string) templ.Component {
 			var_1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, err = templBuffer.WriteString("<div id=\"card\" class=\"mx-auto max-w-xl rounded-lg bg-gray-100 p-6 text-center shadow-xl dark:bg-gray-700\"><h1 class=\"mb-4 text-2xl font-semibold dark:text-gray-50\">")
-		if err != nil {
-			return err
-		}
-		var_2 := `Usuário Não Encontrado`
-		_, err = templBuffer.WriteString(var_2)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</h1><p class=\"mb-6 text-gray-500 dark:text-gray-300\">")
-		if err != nil {
-			return err
-		}
-		var_3 := `Não conseguimos encontrar um usuário com matrícula `
-		_, err = templBuffer.WriteString(var_3)
-		if err != nil {
-			return err
-		}
-		var var_4 string = id
-		_, err = templBuffer.WriteString(templ.EscapeString(var_4))
-		if err != nil {
-			return err
-		}
-		var_5 := `. Por favor tente de novo.`
-		_, err = templBuffer.WriteString(var_5)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</p><a href=\"/\" hx-target=\"card\" class=\"text-orange-600 hover:underline\">")
-		if err != nil {
-			return err
-		}
-		var_6 := `Retornar à página inicial`
-		_, err = templBuffer.WriteString(var_6)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</a></div>")
+		err = InfoPage("Usuário Não Encontrado", fmt.Sprintf("Não conseguimos encontrar um usuário com matrícula %s. Por favor tente de novo.", id)).Render(ctx, templBuffer)
 		if err != nil {
 			return err
 		}

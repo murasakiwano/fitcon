@@ -22,7 +22,7 @@ func Home() templ.Component {
 			var_1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, err = templBuffer.WriteString("<div id=\"card\" class=\"container mx-auto\"><div class=\"mx-auto max-w-xl rounded-lg bg-white p-6 shadow-xl dark:bg-gray-700\"><h1 class=\"mb-4 text-2xl font-semibold text-gray-700 dark:text-gray-50\">")
+		_, err = templBuffer.WriteString("<div id=\"card\" class=\"container mx-auto\"><div class=\"mx-auto max-w-xl rounded-lg bg-white overflow-scroll p-6 shadow-xl dark:bg-gray-700\"><h1 class=\"mb-4 text-2xl font-semibold text-gray-700 dark:text-gray-50\">")
 		if err != nil {
 			return err
 		}
@@ -31,16 +31,19 @@ func Home() templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</h1><form id=\"user-id-form\" method=\"GET\" hx-get=\"/users\" hx-target=\"#card\"><div class=\"mb-4\"><input type=\"text\" name=\"matricula\" placeholder=\"C012345\" class=\"w-full rounded-md border p-2 dark:border-none dark:bg-gray-800 dark:text-gray-300 dark:shadow-sm\"></div><div><button type=\"submit\" class=\"rounded-md bg-orange-600 px-4 py-2 text-white hover:bg-orange-700\">")
+		_, err = templBuffer.WriteString("</h1><form id=\"user-id-form\" method=\"GET\" hx-get=\"/users\" hx-target=\"#card\">")
 		if err != nil {
 			return err
 		}
-		var_3 := `Ver Metas`
-		_, err = templBuffer.WriteString(var_3)
+		err = FormInput("username", "Matrícula", "text", "matricula", "matricula", "C012345", true).Render(ctx, templBuffer)
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</button></div></form></div></div>")
+		err = Button("Ver Metas").Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</form></div></div>")
 		if err != nil {
 			return err
 		}

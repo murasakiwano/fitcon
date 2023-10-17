@@ -33,196 +33,251 @@ func UserTable(fc fitconner.FitConner) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</h1><img src=\"path_to_your_logo.png\" alt=\"Logo\" class=\"h-12 w-auto\"></div><table class=\"min-w-full divide-y divide-gray-200\"><tbody class=\"bg-gray-50 dark:bg-gray-700\"><tr><td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm font-medium text-gray-900 dark:text-gray-50\">")
+		_, err = templBuffer.WriteString("</h1><img src=\"img/logo.png\" alt=\"Logo\" class=\"h-12 w-auto\"></div><table class=\"min-w-full divide-y divide-gray-200\"><tbody class=\"bg-gray-50 dark:bg-gray-700\"><tr>")
 		if err != nil {
 			return err
 		}
-		var_3 := `Matrícula`
-		_, err = templBuffer.WriteString(var_3)
+		err = titleCell("Matrícula").Render(ctx, templBuffer)
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</div></td><td></td><td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm text-gray-500 dark:text-gray-300\">")
+		_, err = templBuffer.WriteString("<td></td>")
 		if err != nil {
 			return err
 		}
-		var var_4 string = fc.ID
+		err = bodyCell(fc.ID).Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</tr><tr>")
+		if err != nil {
+			return err
+		}
+		err = titleCell("Equipe").Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("<td></td>")
+		if err != nil {
+			return err
+		}
+		err = bodyCell(fc.TeamName).Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</tr><tr>")
+		if err != nil {
+			return err
+		}
+		err = titleCell("Nome").Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("<td></td>")
+		if err != nil {
+			return err
+		}
+		err = bodyCell(fc.Name).Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</tr><tr>")
+		if err != nil {
+			return err
+		}
+		err = titleCell("Equipe").Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("<td></td>")
+		if err != nil {
+			return err
+		}
+		err = bodyCell(fc.TeamName).Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</tr><tr>")
+		if err != nil {
+			return err
+		}
+		err = goalTitleCell("1").Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		err = bodyCell("Percentual de Gordura").Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		err = bodyCell(fc.Goal1FatPercentage).Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</tr><tr>")
+		if err != nil {
+			return err
+		}
+		err = bodyCell("Massa Magra").Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		err = bodyCell(fc.Goal1LeanMass).Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</tr><tr>")
+		if err != nil {
+			return err
+		}
+		err = goalTitleCell("2").Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		err = bodyCell("Gordura Visceral").Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		err = bodyCell(fc.Goal2VisceralFat).Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</tr><tr>")
+		if err != nil {
+			return err
+		}
+		err = bodyCell("Gordura Corporal").Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		err = bodyCell(fc.Goal2FatPercentage).Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</tr><tr>")
+		if err != nil {
+			return err
+		}
+		err = bodyCell("Massa Magra").Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		err = bodyCell(fc.Goal2LeanMass).Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</tr></tbody></table></div>")
+		if err != nil {
+			return err
+		}
+		err = Button("← Voltar ").Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</div>")
+		if err != nil {
+			return err
+		}
+		if !templIsBuffer {
+			_, err = templBuffer.WriteTo(w)
+		}
+		return err
+	})
+}
+
+func bodyCell(text string) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+		templBuffer, templIsBuffer := w.(*bytes.Buffer)
+		if !templIsBuffer {
+			templBuffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templBuffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		var_3 := templ.GetChildren(ctx)
+		if var_3 == nil {
+			var_3 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, err = templBuffer.WriteString("<td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm text-gray-500 dark:text-gray-300\">")
+		if err != nil {
+			return err
+		}
+		var var_4 string = text
 		_, err = templBuffer.WriteString(templ.EscapeString(var_4))
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</div></td></tr><tr><td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm font-medium text-gray-900 dark:text-gray-50\">")
+		_, err = templBuffer.WriteString("</div></td>")
 		if err != nil {
 			return err
 		}
-		var_5 := `Equipe`
-		_, err = templBuffer.WriteString(var_5)
+		if !templIsBuffer {
+			_, err = templBuffer.WriteTo(w)
+		}
+		return err
+	})
+}
+
+func titleCell(text string) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+		templBuffer, templIsBuffer := w.(*bytes.Buffer)
+		if !templIsBuffer {
+			templBuffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templBuffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		var_5 := templ.GetChildren(ctx)
+		if var_5 == nil {
+			var_5 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, err = templBuffer.WriteString("<td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm font-medium text-gray-900 dark:text-gray-50\">")
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</div></td><td></td><td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm text-gray-500 dark:text-gray-300\">")
-		if err != nil {
-			return err
-		}
-		var var_6 string = fc.TeamName
+		var var_6 string = text
 		_, err = templBuffer.WriteString(templ.EscapeString(var_6))
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</div></td></tr><tr><td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm font-medium text-gray-900 dark:text-gray-50\">")
+		_, err = templBuffer.WriteString("</div></td>")
 		if err != nil {
 			return err
 		}
-		var_7 := `Nome`
-		_, err = templBuffer.WriteString(var_7)
+		if !templIsBuffer {
+			_, err = templBuffer.WriteTo(w)
+		}
+		return err
+	})
+}
+
+func goalTitleCell(num string) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+		templBuffer, templIsBuffer := w.(*bytes.Buffer)
+		if !templIsBuffer {
+			templBuffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templBuffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		var_7 := templ.GetChildren(ctx)
+		if var_7 == nil {
+			var_7 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, err = templBuffer.WriteString("<td class=\"whitespace-nowrap px-6 py-4\" rowspan=\"2\"><div class=\"text-sm font-medium text-gray-900 dark:text-gray-50\">")
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</div></td><td></td><td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm text-gray-500 dark:text-gray-300\">")
+		var_8 := `Meta `
+		_, err = templBuffer.WriteString(var_8)
 		if err != nil {
 			return err
 		}
-		var var_8 string = fc.Name
-		_, err = templBuffer.WriteString(templ.EscapeString(var_8))
+		var var_9 string = num
+		_, err = templBuffer.WriteString(templ.EscapeString(var_9))
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</div></td></tr><tr><td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm font-medium text-gray-900 dark:text-gray-50\">")
-		if err != nil {
-			return err
-		}
-		var_9 := `Equipe`
-		_, err = templBuffer.WriteString(var_9)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</div></td><td></td><td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm text-gray-500 dark:text-gray-300\">")
-		if err != nil {
-			return err
-		}
-		var var_10 string = fc.TeamName
-		_, err = templBuffer.WriteString(templ.EscapeString(var_10))
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</div></td></tr><tr><td class=\"whitespace-nowrap px-6 py-4\" rowspan=\"2\"><div class=\"text-sm font-medium text-gray-900 dark:text-gray-50\">")
-		if err != nil {
-			return err
-		}
-		var_11 := `Meta 1`
-		_, err = templBuffer.WriteString(var_11)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</div></td><td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm text-gray-500 dark:text-gray-300\">")
-		if err != nil {
-			return err
-		}
-		var_12 := `Percentual de Gordura`
-		_, err = templBuffer.WriteString(var_12)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</div></td><td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm text-gray-500 dark:text-gray-300\">")
-		if err != nil {
-			return err
-		}
-		var var_13 string = fc.Goal1FatPercentage
-		_, err = templBuffer.WriteString(templ.EscapeString(var_13))
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</div></td></tr><tr><td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm text-gray-500 dark:text-gray-300\">")
-		if err != nil {
-			return err
-		}
-		var_14 := `Massa Magra`
-		_, err = templBuffer.WriteString(var_14)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</div></td><td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm text-gray-500 dark:text-gray-300\">")
-		if err != nil {
-			return err
-		}
-		var var_15 string = fc.Goal1LeanMass
-		_, err = templBuffer.WriteString(templ.EscapeString(var_15))
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</div></td></tr><tr><td class=\"whitespace-nowrap px-6 py-4\" rowspan=\"3\"><div class=\"text-sm font-medium text-gray-900 dark:text-gray-50\">")
-		if err != nil {
-			return err
-		}
-		var_16 := `Meta 2`
-		_, err = templBuffer.WriteString(var_16)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</div></td><td class=\"whitespace-nowrap px-6 py-4\"><div class=\"dark:text-gray-3000 text-sm text-gray-50\">")
-		if err != nil {
-			return err
-		}
-		var_17 := `Gordura Visceral`
-		_, err = templBuffer.WriteString(var_17)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</div></td><td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm text-gray-500 dark:text-gray-300\">")
-		if err != nil {
-			return err
-		}
-		var var_18 string = fc.Goal2VisceralFat
-		_, err = templBuffer.WriteString(templ.EscapeString(var_18))
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</div></td></tr><tr><td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm text-gray-500 dark:text-gray-300\">")
-		if err != nil {
-			return err
-		}
-		var_19 := `Gordura Corporal`
-		_, err = templBuffer.WriteString(var_19)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</div></td><td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm text-gray-500 dark:text-gray-300\">")
-		if err != nil {
-			return err
-		}
-		var var_20 string = fc.Goal2FatPercentage
-		_, err = templBuffer.WriteString(templ.EscapeString(var_20))
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</div></td></tr><tr><td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm text-gray-500 dark:text-gray-300\">")
-		if err != nil {
-			return err
-		}
-		var_21 := `Massa Magra`
-		_, err = templBuffer.WriteString(var_21)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</div></td><td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm text-gray-500 dark:text-gray-300\">")
-		if err != nil {
-			return err
-		}
-		var var_22 string = fc.Goal2LeanMass
-		_, err = templBuffer.WriteString(templ.EscapeString(var_22))
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</div></td></tr></tbody></table></div><div class=\"p-6\"><a hx-get=\"/home\" hx-target=\"#card\" class=\"inline-flex items-center rounded-md border border-transparent bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-700\">")
-		if err != nil {
-			return err
-		}
-		var_23 := `← Voltar `
-		_, err = templBuffer.WriteString(var_23)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</a></div></div>")
+		_, err = templBuffer.WriteString("</div></td>")
 		if err != nil {
 			return err
 		}
