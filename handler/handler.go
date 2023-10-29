@@ -7,15 +7,16 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/murasakiwano/fitcon/components"
-	"github.com/murasakiwano/fitcon/db"
-	"github.com/murasakiwano/fitcon/fitconner"
+	"github.com/murasakiwano/fitcon/internal/components"
+	"github.com/murasakiwano/fitcon/internal/db"
+	"github.com/murasakiwano/fitcon/internal/fitconner"
 	"go.uber.org/zap"
 )
 
 type Handler struct {
-	db  *db.DB
-	log *zap.SugaredLogger
+	db        *db.DB
+	log       *zap.SugaredLogger
+	jwtSecret string
 }
 
 func New(log *zap.SugaredLogger, fcs *db.DB) Handler {
@@ -38,15 +39,10 @@ func (h *Handler) CreateUser(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	r := struct {
-		Id   string `json:"matricula"`
-		Name string `json:"name"`
-	}{
-		Id:   u.ID,
-		Name: u.Name,
-	}
-
-	return c.JSON(http.StatusCreated, r)
+	return c.JSON(http.StatusCreated, echo.Map{
+		"matricula": u.ID,
+		"nome":      u.Name,
+	})
 }
 
 func (h *Handler) GetUser(c echo.Context) error {
@@ -74,7 +70,7 @@ func (h *Handler) GetUser(c echo.Context) error {
 }
 
 func (h *Handler) GetIndex(c echo.Context) error {
-	if err := components.Index(components.Home()).Render(c.Request().Context(), c.Response().Writer); err != nil {
+	if err := components.Index(components.Home(components.Login())).Render(c.Request().Context(), c.Response().Writer); err != nil {
 		h.log.Error(err)
 		return err
 	}
@@ -83,7 +79,7 @@ func (h *Handler) GetIndex(c echo.Context) error {
 }
 
 func (h *Handler) GetHome(c echo.Context) error {
-	if err := components.Home().Render(c.Request().Context(), c.Response().Writer); err != nil {
+	if err := components.Home(components.GetUserForm()).Render(c.Request().Context(), c.Response().Writer); err != nil {
 		h.log.Error(err)
 		return err
 	}

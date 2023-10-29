@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/murasakiwano/fitcon/fitconner"
+	"github.com/murasakiwano/fitcon/internal/fitconner"
 	"go.uber.org/zap"
 )
 

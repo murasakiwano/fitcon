@@ -4,12 +4,15 @@ package components
 
 //lint:file-ignore SA4006 This context is only used if a nested component is present.
 
-import "github.com/a-h/templ"
-import "context"
-import "io"
-import "bytes"
+import (
+	"bytes"
+	"context"
+	"io"
 
-import "github.com/murasakiwano/fitcon/fitconner"
+	"github.com/a-h/templ"
+)
+
+import "github.com/murasakiwano/fitcon/internal/fitconner"
 
 func UserTable(fc fitconner.FitConner) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {

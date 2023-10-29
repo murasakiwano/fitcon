@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/murasakiwano/fitcon/fitconner"
+	"github.com/murasakiwano/fitcon/internal/fitconner"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 )

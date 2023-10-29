@@ -11,8 +11,8 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
-	"github.com/murasakiwano/fitcon/db"
-	"github.com/murasakiwano/fitcon/fitconner"
+	"github.com/murasakiwano/fitcon/internal/db"
+	"github.com/murasakiwano/fitcon/internal/fitconner"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"

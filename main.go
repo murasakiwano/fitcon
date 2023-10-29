@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/murasakiwano/fitcon/db"
 	"github.com/murasakiwano/fitcon/handler"
+	"github.com/murasakiwano/fitcon/internal/db"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

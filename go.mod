@@ -4,7 +4,9 @@ go 1.21.0
 
 require (
 	github.com/a-h/templ v0.2.364
+	github.com/gorilla/sessions v1.2.1
 	github.com/jmoiron/sqlx v1.3.5
+	github.com/labstack/echo-contrib v0.15.0
 	github.com/labstack/echo-jwt/v4 v4.2.0
 	github.com/labstack/echo/v4 v4.11.2
 	github.com/labstack/gommon v0.4.0
@@ -13,6 +15,11 @@ require (
 	github.com/xuri/excelize/v2 v2.8.0
 	go.uber.org/zap v1.26.0
 	golang.org/x/crypto v0.14.0
+)
+
+require (
+	github.com/gorilla/context v1.1.1 // indirect
+	github.com/gorilla/securecookie v1.1.1 // indirect
 )
 
 require (

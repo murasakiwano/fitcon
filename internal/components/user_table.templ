@@ -1,6 +1,6 @@
 package components
 
-import "github.com/murasakiwano/fitcon/fitconner"
+import "github.com/murasakiwano/fitcon/internal/fitconner"
 
 templ UserTable(fc fitconner.FitConner) {
 	<div id="card" class="container mx-auto dark:bg-gray-700">
@@ -10,50 +10,32 @@ templ UserTable(fc fitconner.FitConner) {
 				<img src="img/logo.png" alt="Logo" class="h-12 w-auto"/>
 			</div>
 			<table class="min-w-full divide-y divide-gray-200"><tbody class="bg-gray-50 dark:bg-gray-700">
-				<tr>
-					@titleCell("Matrícula")
-					<td></td>
-					@bodyCell(fc.ID)
-				</tr>
-				<tr>
-					@titleCell("Equipe")
-					<td></td>
-					@bodyCell(fc.TeamName)
-				</tr>
-				<tr>
-					@titleCell("Nome")
-					<td></td>
-					@bodyCell(fc.Name)
-				</tr>
-				<tr>
-					@titleCell("Equipe")
-					<td></td>
-					@bodyCell(fc.TeamName)
-				</tr>
-				<tr>
-					@goalTitleCell("1")
-					@bodyCell("Percentual de Gordura")
-					@bodyCell(fc.Goal1FatPercentage)
-				</tr>
-				<tr>
-					@bodyCell("Massa Magra")
-					@bodyCell(fc.Goal1LeanMass)
-				</tr>
-				<tr>
-					@goalTitleCell("2")
-					@bodyCell("Gordura Visceral")
-					@bodyCell(fc.Goal2VisceralFat)
-				</tr>
-				<tr>
-					@bodyCell("Gordura Corporal")
-					@bodyCell(fc.Goal2FatPercentage)
-				</tr>
-				<tr>
-					@bodyCell("Massa Magra")
-					@bodyCell(fc.Goal2LeanMass)
-				</tr>
-				</tbody>
-			</table>
+	<tr>
+		@titleCell("Matrícula")
+		<td></td>
+		@bodyCell(fc.ID)
+	</tr>
+	<tr>
+		@titleCell("Equipe")
+		<td></td>
+		@bodyCell(fc.TeamName)
+	</tr>
+	<tr>
+		@titleCell("Nome")
+		<td></td>
+		@bodyCell(fc.Name)
+	</tr>
+	<tr>
+		@titleCell("Equipe")
+		<td></td>
+		@bodyCell(fc.TeamName)
+	</tr>
+	<tr>@goalTitleCell("1") @bodyCell("Percentual de Gordura") @bodyCell(fc.Goal1FatPercentage)</tr>
+	<tr>@bodyCell("Massa Magra") @bodyCell(fc.Goal1LeanMass)</tr>
+	<tr>@goalTitleCell("2") @bodyCell("Gordura Visceral") @bodyCell(fc.Goal2VisceralFat)</tr>
+	<tr>@bodyCell("Gordura Corporal") @bodyCell(fc.Goal2FatPercentage)</tr>
+	<tr>@bodyCell("Massa Magra") @bodyCell(fc.Goal2LeanMass)</tr>
+</tbody></table>
 		</div>
 		@Button("← Voltar ")
 	</div>
@@ -76,3 +58,4 @@ templ goalTitleCell(num string) {
 		<div class="text-sm font-medium text-gray-900 dark:text-gray-50">Meta { num }</div>
 	</td>
 }
+

@@ -9,7 +9,7 @@ import "context"
 import "io"
 import "bytes"
 
-func Home() templ.Component {
+func Home(comp templ.Component) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
 		templBuffer, templIsBuffer := w.(*bytes.Buffer)
 		if !templIsBuffer {
@@ -22,12 +22,44 @@ func Home() templ.Component {
 			var_1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, err = templBuffer.WriteString("<div id=\"card\" class=\"container mx-auto\"><div class=\"mx-auto max-w-xl rounded-lg bg-white overflow-scroll p-6 shadow-xl dark:bg-gray-700\"><h1 class=\"mb-4 text-2xl font-semibold text-gray-700 dark:text-gray-50\">")
+		_, err = templBuffer.WriteString("<div id=\"card\" class=\"container mx-auto\"><div class=\"mx-auto max-w-xl rounded-lg bg-white overflow-scroll p-6 shadow-xl dark:bg-gray-700\">")
 		if err != nil {
 			return err
 		}
-		var_2 := `Insira sua matrícula`
-		_, err = templBuffer.WriteString(var_2)
+		err = comp.Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</div></div>")
+		if err != nil {
+			return err
+		}
+		if !templIsBuffer {
+			_, err = templBuffer.WriteTo(w)
+		}
+		return err
+	})
+}
+
+func GetUserForm() templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+		templBuffer, templIsBuffer := w.(*bytes.Buffer)
+		if !templIsBuffer {
+			templBuffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templBuffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		var_2 := templ.GetChildren(ctx)
+		if var_2 == nil {
+			var_2 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, err = templBuffer.WriteString("<h1 class=\"mb-4 text-2xl font-semibold text-gray-700 dark:text-gray-50\">")
+		if err != nil {
+			return err
+		}
+		var_3 := `Insira sua matrícula`
+		_, err = templBuffer.WriteString(var_3)
 		if err != nil {
 			return err
 		}
@@ -43,7 +75,7 @@ func Home() templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</form></div></div>")
+		_, err = templBuffer.WriteString("</form>")
 		if err != nil {
 			return err
 		}

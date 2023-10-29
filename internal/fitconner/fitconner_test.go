@@ -15,7 +15,7 @@ func TestPasswordIsBeingHashed(t *testing.T) {
 		t.Fatalf("Error creating FitConner: %s", err)
 	}
 
-	if !assert.NoError(t, bcrypt.CompareHashAndPassword([]byte(fc.Password), []byte("test-password1"))) {
+	if !assert.NoError(t, bcrypt.CompareHashAndPassword([]byte(fc.HashedPassword), []byte("test-password1"))) {
 		t.Fatal("Password is not being hashed")
 	}
 }

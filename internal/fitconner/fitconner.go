@@ -9,7 +9,7 @@ import (
 type FitConner struct {
 	ID                 string `json:"matricula"  form:"matricula" db:"id"`
 	Name               string `json:"name"  form:"name" db:"name"`
-	Password           string `json:"password"  form:"password" db:"password"`
+	HashedPassword     string `json:"hashed_password"  form:"hashed_password" db:"hashed_password"`
 	Goal1FatPercentage string `json:"goal1FatPercentage"  form:"goal1FatPercentage" db:"goal1_fat_percentage"`
 	Goal1LeanMass      string `json:"goal1LeanMass"  form:"goal1LeanMass" db:"goal1_lean_mass"`
 	Goal2FatPercentage string `json:"goal2FatPercentage"  form:"goal2FatPercentage" db:"goal2_fat_percentage"`
@@ -46,7 +46,7 @@ func New(
 	return &FitConner{
 		ID:                 id,
 		Name:               name,
-		Password:           string(hash),
+		HashedPassword:     string(hash),
 		TeamName:           teamName,
 		TeamNumber:         teamNumber,
 		Goal1FatPercentage: goals1["fatPercentage"],
@@ -98,7 +98,7 @@ func (fc FitConner) MarshalLogObject(oe zapcore.ObjectEncoder) error {
 }
 
 func (fc *FitConner) ClearPassword() {
-	fc.Password = ""
+	fc.HashedPassword = ""
 }
 
 func (fc *FitConner) SetPassword(password string) error {
@@ -106,13 +106,13 @@ func (fc *FitConner) SetPassword(password string) error {
 	if err != nil {
 		return err
 	}
-	fc.Password = string(hash)
+	fc.HashedPassword = string(hash)
 
 	return nil
 }
 
 func (fc FitConner) PasswordEmpty() bool {
-	return fc.Password == ""
+	return fc.HashedPassword == ""
 }
 
 func hashPassword(password string) (string, error) {

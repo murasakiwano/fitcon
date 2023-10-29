@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gorilla/sessions"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
@@ -18,8 +20,10 @@ func TestSignUp(t *testing.T) {
 	h.db.CreateFitConner(*fc)
 	e := echo.New()
 	f := make(url.Values)
+	store := sessions.NewCookieStore([]byte("secret"))
+	e.Use(session.Middleware(store))
 	f.Set("matricula", fc.ID)
-	f.Set("password", fc.Password)
+	f.Set("password", fc.HashedPassword)
 	req := httptest.NewRequest(http.MethodPost, "/signup", strings.NewReader(f.Encode()))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
 	rec := httptest.NewRecorder()
@@ -50,4 +54,7 @@ func TestLogin(t *testing.T) {
 	if assert.NoError(t, h.Login(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 	}
+}
+
+func TestMultipleSessions(t *testing.T) {
 }
