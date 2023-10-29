@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/murasakiwano/fitcon/fitconner"
+	"github.com/murasakiwano/fitcon/internal/fitconner"
 	"github.com/xuri/excelize/v2"
 	"go.uber.org/zap"
 )
