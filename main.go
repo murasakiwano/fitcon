@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/murasakiwano/fitcon/handler"
 	"github.com/murasakiwano/fitcon/internal/db"
 	"go.uber.org/zap"
@@ -12,6 +13,8 @@ import (
 func main() {
 	var logger zap.SugaredLogger
 	var cfg zap.Config
+
+	godotenv.Load(".env")
 
 	if os.Getenv("ENV") == "production" {
 		cfg = zap.NewProductionConfig()

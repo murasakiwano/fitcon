@@ -2,14 +2,9 @@ package auth
 
 import (
 	"errors"
-	"net/http"
-	"os"
-	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	echojwt "github.com/labstack/echo-jwt/v4"
-	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -17,6 +12,11 @@ type LoginSession struct {
 	ExpiresAt time.Time
 	Uuid      string
 	UserID    uint
+}
+
+type jwtCustomClaims struct {
+	jwt.RegisteredClaims
+	Admin bool
 }
 
 // ErrNoAuthHeaderIncluded -
@@ -37,14 +37,17 @@ func CheckPasswordHash(password, hash string) error {
 }
 
 // MakeJWT -
-func MakeJWT(userID string, tokenSecret string, expiresIn time.Duration, issuer string) (string, error) {
+func MakeJWT(userID string, tokenSecret string, expiresIn time.Duration, issuer string, admin bool) (string, error) {
 	signingKey := []byte(tokenSecret)
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
-		Issuer:    issuer,
-		IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
-		ExpiresAt: jwt.NewNumericDate(time.Now().UTC().Add(expiresIn)),
-		Subject:   userID,
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtCustomClaims{
+		jwt.RegisteredClaims{
+			Issuer:    issuer,
+			IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
+			ExpiresAt: jwt.NewNumericDate(time.Now().UTC().Add(expiresIn)),
+			Subject:   userID,
+		},
+		admin,
 	})
 	return token.SignedString(signingKey)
 }
@@ -77,23 +80,4 @@ func ValidateJWT(tokenString, tokenSecret string) (claims, error) {
 	}
 
 	return claims{Subject: userIDString, Issuer: issuer}, nil
-}
-
-// GetBearerToken -
-func GetBearerToken(headers http.Header) (string, error) {
-	authHeader := headers.Get("Authorization")
-	if authHeader == "" {
-		return "", ErrNoAuthHeaderIncluded
-	}
-	splitAuth := strings.Split(authHeader, " ")
-	if len(splitAuth) < 2 || splitAuth[0] != "Bearer" {
-		return "", errors.New("malformed authorization header")
-	}
-
-	return splitAuth[1], nil
-}
-
-func JWTMiddleware() echo.MiddlewareFunc {
-	secret := os.Getenv("JWT_SECRET")
-	return echojwt.JWT([]byte(secret))
 }

@@ -41,7 +41,7 @@ func (h *Handler) CreateUser(c echo.Context) error {
 
 	return c.JSON(http.StatusCreated, echo.Map{
 		"matricula": u.ID,
-		"nome":      u.Name,
+		"name":      u.Name,
 	})
 }
 

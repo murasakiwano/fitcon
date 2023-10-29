@@ -1,14 +1,14 @@
 package fitconner
 
 import (
+	"github.com/murasakiwano/fitcon/internal/auth"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type FitConner struct {
-	ID                 string `json:"matricula"  form:"matricula" db:"id"`
-	Name               string `json:"name"  form:"name" db:"name"`
+	ID                 string `json:"matricula"  form:"matricula" db:"id" query:"matricula"`
+	Name               string `json:"name"  form:"name" db:"name" query:"name"`
 	HashedPassword     string `json:"hashed_password"  form:"hashed_password" db:"hashed_password"`
 	Goal1FatPercentage string `json:"goal1FatPercentage"  form:"goal1FatPercentage" db:"goal1_fat_percentage"`
 	Goal1LeanMass      string `json:"goal1LeanMass"  form:"goal1LeanMass" db:"goal1_lean_mass"`
@@ -36,7 +36,7 @@ func New(
 	g2VisceralFat string,
 	teamNumber int,
 ) (*FitConner, error) {
-	hash, err := hashPassword(password)
+	hash, err := auth.HashPassword(password)
 	if err != nil {
 		return nil, err
 	}
@@ -102,10 +102,11 @@ func (fc *FitConner) ClearPassword() {
 }
 
 func (fc *FitConner) SetPassword(password string) error {
-	hash, err := hashPassword(password)
+	hash, err := auth.HashPassword(password)
 	if err != nil {
 		return err
 	}
+
 	fc.HashedPassword = string(hash)
 
 	return nil
@@ -113,14 +114,4 @@ func (fc *FitConner) SetPassword(password string) error {
 
 func (fc FitConner) PasswordEmpty() bool {
 	return fc.HashedPassword == ""
-}
-
-func hashPassword(password string) (string, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		sugar.Error("error generating hash", zap.Error(err))
-		return "", err
-	}
-
-	return string(hash), nil
 }

@@ -12,7 +12,7 @@ var (
 create table if not exists %s (
 	id varchar(7) primary key,
 	name text not null,
-	password text default '',
+	hashed_password text default '',
 	team_name text not null,
 	team_number integer not null,
 	goal1_fat_percentage text default '-',
@@ -27,7 +27,7 @@ create table if not exists %s (
 INSERT INTO %s (
 	id,
 	name,
-	password,
+	hashed_password,
 	team_name,
 	team_number,
 	goal1_fat_percentage,
@@ -39,7 +39,7 @@ INSERT INTO %s (
 VALUES (
 	:id,
 	:name,
-	:password,
+	:hashed_password,
 	:team_name,
 	:team_number,
 	:goal1_fat_percentage,

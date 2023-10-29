@@ -60,6 +60,10 @@ func (h *Handler) Serve() {
 		},
 	}))
 
+	a := e.Group("/admin")
+	a.POST("", h.CreateAdmin)
+	a.POST("/login", h.LoginAdmin)
+
 	e.Logger.SetLevel(log.DEBUG)
 	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
 }

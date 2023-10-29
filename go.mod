@@ -7,7 +7,6 @@ require (
 	github.com/gorilla/sessions v1.2.1
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/labstack/echo-contrib v0.15.0
-	github.com/labstack/echo-jwt/v4 v4.2.0
 	github.com/labstack/echo/v4 v4.11.2
 	github.com/labstack/gommon v0.4.0
 	github.com/mattn/go-sqlite3 v1.14.17
@@ -20,6 +19,8 @@ require (
 require (
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
+	github.com/joho/godotenv v1.5.1 // indirect
+	github.com/labstack/echo-jwt/v4 v4.2.0 // indirect
 )
 
 require (

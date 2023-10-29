@@ -1,12 +1,18 @@
 package db
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	"go.uber.org/zap"
+)
+
+var (
+	ErrNotExists     = errors.New("resource does not exist")
+	ErrAlreadyExists = errors.New("resource already exists")
 )
 
 type DB struct {
@@ -40,6 +46,7 @@ func New(logger *zap.SugaredLogger) (*DB, error) {
 func (db *DB) Create() {
 	// exec the schema or fail;
 	db.db.MustExec(fitconnerSchema)
+	db.db.MustExec(adminSchema)
 }
 
 func (db *DB) Drop() {

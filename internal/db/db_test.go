@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/murasakiwano/fitcon/internal/auth"
 	"github.com/murasakiwano/fitcon/internal/fitconner"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
@@ -40,6 +41,11 @@ var defaultSchema = Schema{
 	drop:   fitconnerDrop,
 }
 
+var adminTestSchema = Schema{
+	create: adminSchema,
+	drop:   dropAdmins,
+}
+
 var logger, _ = zap.NewDevelopment()
 
 func TestInsertFitConner(t *testing.T) {
@@ -67,10 +73,15 @@ func TestInsertFitConner(t *testing.T) {
 func TestGetFitConner(t *testing.T) {
 	defaultSchema.Create()
 	defer defaultSchema.Drop()
-	db := DB{db: sldb, logger: logger.Sugar()}
-	db.db.MustExec(insertFitConnerQuery, "C123456", "John Doe", "Team 1", 1, "10", "20", "30", "40", "50")
 
-	_, err := db.GetFitConner("C123456")
+	hashedPassword, err := auth.HashPassword("password-123")
+	if err != nil {
+		t.Fatalf("Error hashing password: %s", err)
+	}
+	db := DB{db: sldb, logger: logger.Sugar()}
+	db.db.MustExec(insertFitConnerQuery, "C123456", "John Doe", hashedPassword, "Team 1", 1, "10", "20", "30", "40", "50")
+
+	_, err = db.GetFitConner("C123456")
 	if err != nil {
 		t.Errorf("Error while getting fitconner: %v", err)
 	}
@@ -140,4 +151,41 @@ func TestUpdateFitConner(t *testing.T) {
 	}
 
 	assert.Equal(t, "Aumentar 2kg", updatedFc.Goal2LeanMass)
+}
+
+func TestInsertAdmin(t *testing.T) {
+	adminTestSchema.Create()
+	defer adminTestSchema.Drop()
+	db := DB{db: sldb, logger: logger.Sugar()}
+	hashedPassword, err := auth.HashPassword("password-123")
+	if err != nil {
+		t.Fatalf("Error hashing password: %s", err)
+	}
+	admin := Admin{
+		Name:           "Zezao",
+		HashedPassword: hashedPassword,
+	}
+	err = db.CreateAdmin(admin)
+	if err != nil {
+		t.Errorf("Error while creating admin: %v", err)
+	}
+}
+
+func TestGetAdmin(t *testing.T) {
+	adminTestSchema.Create()
+	defer adminTestSchema.Drop()
+
+	hashedPassword, err := auth.HashPassword("password-123")
+	if err != nil {
+		t.Fatalf("Error hashing password: %s", err)
+	}
+	db := DB{db: sldb, logger: logger.Sugar()}
+	db.db.MustExec(insertAdminQuery, "Zezao", hashedPassword)
+
+	admin, err := db.GetAdmin("Zezao")
+	if err != nil {
+		t.Errorf("Error while getting admin: %v", err)
+	}
+
+	assert.Equal(t, admin.Name, "Zezao")
 }
