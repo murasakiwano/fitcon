@@ -41,6 +41,6 @@ func (h *Handler) UpdateUser(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"matricula": id,
-		"updated":   jsonParams,
+		"updated":   string(jsonParams),
 	})
 }
