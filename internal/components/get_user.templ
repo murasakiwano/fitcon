@@ -1,0 +1,11 @@
+package components
+
+templ GetUser() {
+	@Container(GetUserForm())
+}
+
+templ GetUserForm() {
+	<h1 class="mb-4 text-2xl font-semibold text-gray-700 dark:text-gray-50">Insira sua matrícula</h1>
+	<form id="user-id-form" method="GET" hx-get="/restricted/users" hx-target=".container">@FormInput("username", "Matrícula", "text", "matricula", "matricula", "C012345", true)@Button("Ver Metas")</form>
+}
+

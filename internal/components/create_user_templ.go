@@ -82,7 +82,7 @@ func header() templ.Component {
 		if err != nil {
 			return err
 		}
-		var_4 := `Create New User`
+		var_4 := `Criar novo Usuário`
 		_, err = templBuffer.WriteString(var_4)
 		if err != nil {
 			return err

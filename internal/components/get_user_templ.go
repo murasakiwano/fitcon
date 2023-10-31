@@ -9,7 +9,7 @@ import "context"
 import "io"
 import "bytes"
 
-func Home(comp templ.Component) templ.Component {
+func GetUser() templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
 		templBuffer, templIsBuffer := w.(*bytes.Buffer)
 		if !templIsBuffer {
@@ -22,15 +22,7 @@ func Home(comp templ.Component) templ.Component {
 			var_1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, err = templBuffer.WriteString("<div id=\"card\" class=\"container mx-auto\"><div class=\"mx-auto max-w-xl rounded-lg bg-white overflow-scroll p-6 shadow-xl dark:bg-gray-700\">")
-		if err != nil {
-			return err
-		}
-		err = comp.Render(ctx, templBuffer)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</div></div>")
+		err = Container(GetUserForm()).Render(ctx, templBuffer)
 		if err != nil {
 			return err
 		}
@@ -63,7 +55,7 @@ func GetUserForm() templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</h1><form id=\"user-id-form\" method=\"GET\" hx-get=\"/users\" hx-target=\"#card\">")
+		_, err = templBuffer.WriteString("</h1><form id=\"user-id-form\" method=\"GET\" hx-get=\"/restricted/users\" hx-target=\".container\">")
 		if err != nil {
 			return err
 		}

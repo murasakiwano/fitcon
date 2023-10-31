@@ -1,17 +1,44 @@
 package components
 
 templ Login() {
-  @Container(inner("login", "/login", "Entrar"))
+	@Container(inner("login", "/login", "Entrar"))
 }
 
 templ SignUp() {
-    @Container(inner("signup", "/signup", "Cadastrar"))
+	@Container(inner("signup", "/signup", "Cadastrar"))
+}
+
+templ AdminForm(id, action, buttonTitle string) {
+	<div class="container mx-auto">
+		<div class="mx-auto max-w-xl rounded-lg bg-white p-6 shadow-xl dark:bg-gray-700">
+			<form id={ id } action={ action } method="POST">
+				@FormInput("username", "Nome", "text", "username", "username", "zezin", true)
+				@FormInput("password", "Senha", "password", "password", "password", "senha_secreta!", true)
+				@FormInput("admin_secret", "Segredo", "password", "admin_secret", "admin_secret", "muuuuito secreto!", true)
+				@Button(buttonTitle)
+			</form>
+		</div>
+	</div>
+}
+
+templ LoginAdmin() {
+	@AdminForm("login", "/admin/login", "Entrar")
+}
+
+templ SignUpAdmin() {
+	@AdminForm("signup", "/admin", "Cadastrar")
 }
 
 templ inner(id, action, buttonTitle string) {
-  <form id={ id } action={ action } method="POST">
-    @FormInput("username", "Matrícula", "text", "matricula", "matricula", "C012345", true)
-    @FormInput("password", "Senha", "password", "password", "password", "senha_secreta!", true)
-    @Button(buttonTitle)
-  </form>
+	<form id={ id } action={ action } method="POST">
+		@FormInput("username", "Matrícula", "text", "matricula", "matricula", "C012345", true)
+		@FormInput("password", "Senha", "password", "password", "password", "senha_secreta!", true)
+		@Button(buttonTitle)
+		if id == "login" {
+			<div class="relative">
+				<div><button type="button" hx-get="/signup" hx-target="body" class="rounded-md bg-orange-600 px-4 py-2 text-white hover:bg-orange-700 absolute bottom-0 right-0">Criar conta</button></div>
+			</div>
+		}
+	</form>
 }
+

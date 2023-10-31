@@ -57,7 +57,7 @@ func SignUp() templ.Component {
 	})
 }
 
-func inner(id, action, buttonTitle string) templ.Component {
+func AdminForm(id, action, buttonTitle string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
 		templBuffer, templIsBuffer := w.(*bytes.Buffer)
 		if !templIsBuffer {
@@ -68,6 +68,114 @@ func inner(id, action, buttonTitle string) templ.Component {
 		var_3 := templ.GetChildren(ctx)
 		if var_3 == nil {
 			var_3 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, err = templBuffer.WriteString("<div class=\"container mx-auto\"><div class=\"mx-auto max-w-xl rounded-lg bg-white p-6 shadow-xl dark:bg-gray-700\"><form id=\"")
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString(templ.EscapeString(id))
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("\" action=\"")
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString(templ.EscapeString(action))
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("\" method=\"POST\">")
+		if err != nil {
+			return err
+		}
+		err = FormInput("username", "Nome", "text", "username", "username", "zezin", true).Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		err = FormInput("password", "Senha", "password", "password", "password", "senha_secreta!", true).Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		err = FormInput("admin_secret", "Segredo", "password", "admin_secret", "admin_secret", "muuuuito secreto!", true).Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		err = Button(buttonTitle).Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</form></div></div>")
+		if err != nil {
+			return err
+		}
+		if !templIsBuffer {
+			_, err = templBuffer.WriteTo(w)
+		}
+		return err
+	})
+}
+
+func LoginAdmin() templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+		templBuffer, templIsBuffer := w.(*bytes.Buffer)
+		if !templIsBuffer {
+			templBuffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templBuffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		var_4 := templ.GetChildren(ctx)
+		if var_4 == nil {
+			var_4 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		err = AdminForm("login", "/admin/login", "Entrar").Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		if !templIsBuffer {
+			_, err = templBuffer.WriteTo(w)
+		}
+		return err
+	})
+}
+
+func SignUpAdmin() templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+		templBuffer, templIsBuffer := w.(*bytes.Buffer)
+		if !templIsBuffer {
+			templBuffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templBuffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		var_5 := templ.GetChildren(ctx)
+		if var_5 == nil {
+			var_5 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		err = AdminForm("signup", "/admin", "Cadastrar").Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		if !templIsBuffer {
+			_, err = templBuffer.WriteTo(w)
+		}
+		return err
+	})
+}
+
+func inner(id, action, buttonTitle string) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+		templBuffer, templIsBuffer := w.(*bytes.Buffer)
+		if !templIsBuffer {
+			templBuffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templBuffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		var_6 := templ.GetChildren(ctx)
+		if var_6 == nil {
+			var_6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, err = templBuffer.WriteString("<form id=\"")
@@ -101,6 +209,21 @@ func inner(id, action, buttonTitle string) templ.Component {
 		err = Button(buttonTitle).Render(ctx, templBuffer)
 		if err != nil {
 			return err
+		}
+		if id == "login" {
+			_, err = templBuffer.WriteString("<div class=\"relative\"><div><button type=\"button\" hx-get=\"/signup\" hx-target=\"body\" class=\"rounded-md bg-orange-600 px-4 py-2 text-white hover:bg-orange-700 absolute bottom-0 right-0\">")
+			if err != nil {
+				return err
+			}
+			var_7 := `Criar conta`
+			_, err = templBuffer.WriteString(var_7)
+			if err != nil {
+				return err
+			}
+			_, err = templBuffer.WriteString("</button></div></div>")
+			if err != nil {
+				return err
+			}
 		}
 		_, err = templBuffer.WriteString("</form>")
 		if err != nil {
