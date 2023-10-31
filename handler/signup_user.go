@@ -11,7 +11,7 @@ import (
 func (h *Handler) SignUp(c echo.Context) error {
 	id := c.FormValue("matricula")
 	h.log.Debugw("received", zap.String("matricula", id))
-	sess, err := session.Get(id, c)
+	sess, err := session.Get(SessionName, c)
 	if err != nil {
 		h.log.Errorw("Error getting session", zap.Error(err))
 		return c.JSON(http.StatusInternalServerError, echo.Map{

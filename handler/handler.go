@@ -17,3 +17,5 @@ func New(log *zap.SugaredLogger, fcs *db.DB) Handler {
 		db:  fcs,
 	}
 }
+
+const SessionName = "fitcon_session"

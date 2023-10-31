@@ -40,6 +40,7 @@ func TestSignUp(t *testing.T) {
 	if assert.NoError(t, handler(c)) {
 		assert.Equal(t, http.StatusCreated, rec.Code)
 		assert.Equal(t, `{"id":"C123456"}`+"\n", rec.Body.String())
+		assertSession(t, fc.ID, c)
 	}
 }
 
@@ -65,6 +66,8 @@ func TestLogin(t *testing.T) {
 
 	if assert.NoError(t, handler(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
+
+		assertSession(t, fc.ID, c)
 	}
 }
 
@@ -96,12 +99,13 @@ func TestAdminSignUp(t *testing.T) {
 	c := e.NewContext(req, rec)
 
 	if assert.NoError(t, hand(c)) {
-		assert.Equal(t, http.StatusCreated, rec.Code)
+		assert.Equal(t, http.StatusSeeOther, rec.Code)
 		admin, err := h.db.GetAdmin(name)
 		assert.Nil(t, err)
 		assert.Equal(t, admin.Name, name)
 
 		assert.NoError(t, auth.CheckPasswordHash(password, admin.HashedPassword))
+		assertSession(t, name, c)
 	}
 }
 
@@ -140,5 +144,14 @@ func TestAdminLogin(t *testing.T) {
 
 	if assert.NoError(t, handler(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
+
+		assertSession(t, name, c)
 	}
+}
+
+func assertSession(t *testing.T, sessionName string, c echo.Context) {
+	sess, err := session.Get(SessionName, c)
+	assert.Nil(t, err)
+	assert.True(t, sess.Values["authenticated"].(bool))
+	assert.True(t, sess.Options.HttpOnly)
 }

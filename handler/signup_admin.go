@@ -19,7 +19,12 @@ func (h *Handler) CreateAdmin(c echo.Context) error {
 		h.log.Error(zap.Error(err))
 		return echo.ErrBadRequest
 	}
+
 	if params.AdminSecret != os.Getenv("ADMIN_SECRET") {
+		h.log.Debugw("Error comparing secrets",
+			zap.String("got", params.AdminSecret),
+			zap.String("expected", os.Getenv("ADMIN_SECRET")),
+		)
 		return echo.ErrUnauthorized
 	}
 
@@ -46,7 +51,7 @@ func (h *Handler) CreateAdmin(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Couldn't create access token")
 	}
 
-	sess, _ := session.Get(params.Name, c)
+	sess, _ := session.Get(SessionName, c)
 	sess.Options = &DefaultOptions
 
 	sess.Values["token"] = token

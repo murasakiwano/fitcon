@@ -5,7 +5,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/murasakiwano/fitcon/internal/auth"
 	"go.uber.org/zap"
@@ -19,23 +18,16 @@ func (h *Handler) LoginAdmin(c echo.Context) error {
 	}
 	if params.AdminSecret != os.Getenv("ADMIN_SECRET") {
 		h.log.Errorw(
-			"Errorrrr",
+			"Error encountered",
 			zap.String("error", "admin secret does not match"),
-			zap.String("got", params.AdminSecret),
-			zap.String("expected", os.Getenv("ADMIN_SECRET")),
 		)
 		return echo.ErrUnauthorized
 	}
 
-	h.log.Debugw("params",
-		zap.String("name", params.Name),
-		zap.String("password", params.Password),
-	)
-
-	sess, _ := session.Get(params.Name, c)
-	if sess.Values["authenticated"] == true {
-		// TODO: REDIRECT
-		return nil
+	sess, err := h.createSession(params.Name, c)
+	if err != nil {
+		h.log.Errorw("error occurred when creating session", zap.Error(err))
+		return echo.ErrInternalServerError
 	}
 
 	token, err := auth.MakeJWT(params.Name, h.jwtSecret, time.Duration(60*60)*time.Second, "fitcon", true)
@@ -46,11 +38,7 @@ func (h *Handler) LoginAdmin(c echo.Context) error {
 	sess.Values["admin"] = true
 	sess.Values["token"] = token
 	sess.Values["authenticated"] = true
-	h.log.Infow("got session",
-		zap.String("id", sess.ID),
-		zap.Any("options", sess.Options),
-		zap.Bool("isNew", sess.IsNew),
-	)
+	sess.Save(c.Request(), c.Response().Writer)
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"token": token,

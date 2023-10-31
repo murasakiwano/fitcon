@@ -10,22 +10,35 @@ import (
 )
 
 func (h *Handler) GetUser(c echo.Context) error {
-	h.log.Debugw("Request", zap.Any("path", c.Request().URL.Path), zap.Any("context", c.Request().Context()), zap.Any("body", c.Request().Body))
+	h.log.Debugw("Request",
+		zap.Any("path", c.Request().URL.Path),
+		zap.Any("context", c.Request().Context()),
+		zap.Any("body", c.Request().Body),
+	)
 	id := c.QueryParam("matricula")
 	h.log.Debugw("Got", zap.String("matricula", id))
 
 	if err := h.db.ValidateId(id); err != nil {
 		h.log.Error(err)
-		return components.UserIdInvalid(id).Render(context.Background(), c.Response().Writer)
+		return components.UserIdInvalid(id).Render(
+			context.Background(),
+			c.Response().Writer,
+		)
 	}
 
 	fc, err := h.db.GetFitConner(id)
 	if err != nil {
 		h.log.Error(err)
-		return components.UserNotFound(id).Render(c.Request().Context(), c.Response().Writer)
+		return components.UserNotFound(id).Render(
+			c.Request().Context(),
+			c.Response().Writer,
+		)
 	}
 
-	if err := components.UserTable(*fc).Render(c.Request().Context(), c.Response().Writer); err != nil {
+	if err := components.UserTable(*fc).Render(
+		c.Request().Context(),
+		c.Response().Writer,
+	); err != nil {
 		h.log.Error(err)
 		return c.JSON(http.StatusInternalServerError, err)
 	}

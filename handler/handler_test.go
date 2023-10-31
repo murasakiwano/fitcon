@@ -115,8 +115,7 @@ func TestUpdateFitConner(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	expected := `"{\"matricula\":\"C123456\",\"updated\":{\"goal2_lean_mass\":\"Aumentar 2kg\"}}"
-`
+	expected := "{\"matricula\":\"C123456\",\"updated\":\"{\\\"goal2_lean_mass\\\":\\\"Aumentar 2kg\\\"}\"}\n"
 
 	// Assertions
 	if assert.NoError(t, h.UpdateUser(c)) {
@@ -141,7 +140,7 @@ func TestDeleteFitConner(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	expected := "\"{\\\"deleted\\\":\\\"C123456\\\"}\"\n"
+	expected := "{\"deleted\":\"C123456\"}\n"
 
 	// Assertions
 	if assert.NoError(t, h.DeleteUser(c)) {
