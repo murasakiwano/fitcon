@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"net/http"
 	"os"
 
 	"github.com/gorilla/sessions"
@@ -8,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+	"github.com/murasakiwano/fitcon/internal/auth"
 	"go.uber.org/zap"
 )
 
@@ -29,8 +31,9 @@ func (h *Handler) Serve() {
 	e.File("/favicon.ico", "favicon.ico")
 
 	e.GET("/", h.GetIndex)
-	e.GET("/home", h.GetHome)
+	e.GET("/signup", h.GetSignUp)
 	e.POST("/signup", h.SignUp)
+	e.GET("/login", h.GetLogin)
 	e.POST("/login", h.Login)
 
 	r := e.Group("/restricted")
@@ -62,8 +65,63 @@ func (h *Handler) Serve() {
 
 	a := e.Group("/admin")
 	a.POST("", h.CreateAdmin)
+	a.GET("", h.GetSignUpAdmin)
 	a.POST("/login", h.LoginAdmin)
+	a.GET("/login", h.GetLoginAdmin)
+
+	e.Use(authMiddleware)
 
 	e.Logger.SetLevel(log.DEBUG)
 	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
+}
+
+func authMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		sess, err := session.Get(SessionName, c)
+		c.Logger().Debug(sess, err)
+		if err != nil {
+			return err
+		}
+
+		authenticated := sess.Values["authenticated"] == true
+		requestIsToLogin := c.Request().URL.Path == "/login"
+		requestMethodIsGet := c.Request().Method == http.MethodGet
+		if !authenticated && !requestIsToLogin && !requestMethodIsGet {
+			c.Logger().Debug(sess, err)
+			c.Logger().Info("redirecting to login page...")
+			return c.Redirect(http.StatusSeeOther, "/login")
+		}
+
+		c.Logger().Debug(sess, err)
+
+		return next(c)
+	}
+}
+
+func restrictedMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		sess, err := session.Get(SessionName, c)
+		c.Logger().Debug(sess, err)
+		if err != nil {
+			return err
+		}
+
+		id := c.QueryParam("id")
+		tokenString := sess.Values["token"]
+		jwtInfo, err := auth.ValidateJWT(
+			tokenString.(string),
+			os.Getenv("JWT_SECRET"),
+		)
+		if err != nil {
+			return err
+		}
+
+		authorized := jwtInfo.Issuer == "fitcon" &&
+			(jwtInfo.Subject == id || jwtInfo.Admin)
+		if !authorized {
+			return echo.ErrForbidden
+		}
+
+		return next(c)
+	}
 }
