@@ -55,15 +55,21 @@ func MakeJWT(userID string, tokenSecret string, expiresIn time.Duration, issuer 
 type claims struct {
 	Subject string
 	Issuer  string
+	Admin   bool
 }
 
 // ValidateJWT -
 func ValidateJWT(tokenString, tokenSecret string) (claims, error) {
-	claimsStruct := jwt.RegisteredClaims{}
+	claimsStruct := struct {
+		jwt.RegisteredClaims
+		Admin bool
+	}{}
 	token, err := jwt.ParseWithClaims(
 		tokenString,
 		&claimsStruct,
-		func(token *jwt.Token) (interface{}, error) { return []byte(tokenSecret), nil },
+		func(token *jwt.Token) (interface{}, error) {
+			return []byte(tokenSecret), nil
+		},
 	)
 	if err != nil {
 		return claims{}, err
@@ -79,5 +85,9 @@ func ValidateJWT(tokenString, tokenSecret string) (claims, error) {
 		return claims{}, err
 	}
 
-	return claims{Subject: userIDString, Issuer: issuer}, nil
+	return claims{
+		Subject: userIDString,
+		Issuer:  issuer,
+		Admin:   claimsStruct.Admin,
+	}, nil
 }
