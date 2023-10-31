@@ -51,7 +51,9 @@ func (h *Handler) CreateAdmin(c echo.Context) error {
 
 	sess.Values["token"] = token
 	sess.Values["authenticated"] = true
+	sess.Save(c.Request(), c.Response().Writer)
 
+	c.Redirect(http.StatusSeeOther, "/")
 	return c.JSON(http.StatusCreated, echo.Map{
 		"token":   token,
 		"id":      params.Name,
