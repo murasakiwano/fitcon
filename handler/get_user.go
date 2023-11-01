@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/murasakiwano/fitcon/internal/components"
+	"github.com/murasakiwano/fitcon/components"
 	"go.uber.org/zap"
 )
 

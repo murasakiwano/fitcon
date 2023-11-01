@@ -3,7 +3,7 @@ package handler
 import (
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
-	"github.com/murasakiwano/fitcon/internal/components"
+	"github.com/murasakiwano/fitcon/components"
 )
 
 func (h *Handler) GetIndex(c echo.Context) error {

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"net/http"
 	"os"
 
 	"github.com/gorilla/sessions"
@@ -9,6 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+	"github.com/murasakiwano/fitcon/components"
 	"github.com/murasakiwano/fitcon/internal/auth"
 	"go.uber.org/zap"
 )
@@ -20,32 +20,17 @@ var (
 
 func (h *Handler) Serve() {
 	e := echo.New()
-	e.Use(middleware.Logger())
+	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Recover())
 	e.Use(session.Middleware(store))
-
-	e.Static("/assets", "assets")
-	e.Static("/img", "img")
-	e.Static("/css", "css")
-
-	e.File("/favicon.ico", "favicon.ico")
-
-	e.GET("/", h.GetIndex)
-	e.GET("/signup", h.GetSignUp)
-	e.POST("/signup", h.SignUp)
-	e.GET("/login", h.GetLogin)
-	e.POST("/login", h.Login)
-
-	r := e.Group("/restricted")
-	r.GET("/users", h.GetUser)
-	r.PUT("/users", h.UpdateUser)
-	r.POST("/users", h.CreateUser)
+	e.Use(authMiddleware)
 	logger, _ := zap.NewProduction()
+	sugar := logger.Sugar()
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogURI:    true,
 		LogStatus: true,
 		LogValuesFunc: func(_ echo.Context, v middleware.RequestLoggerValues) error {
-			logger.Info("request",
+			sugar.Infow("request values",
 				zap.Time("time", v.StartTime),
 				zap.String("id", v.RequestID),
 				zap.String("remote_ip", v.RemoteIP),
@@ -63,45 +48,68 @@ func (h *Handler) Serve() {
 		},
 	}))
 
+	e.Static("/assets", "assets")
+	e.Static("/img", "img")
+
+	e.File("/favicon.ico", "favicon.ico")
+
+	e.GET("/", h.GetIndex)
+	e.GET("/signup", h.GetSignUp)
+	e.POST("/signup", h.SignUp)
+	e.GET("/login", h.GetLogin)
+	e.POST("/login", h.Login)
+
+	r := e.Group("/restricted")
+	r.GET("/users", h.GetUser)
+	r.PUT("/users", h.UpdateUser)
+	r.POST("/users", h.CreateUser)
+	r.Use(restrictedMiddleware)
+
 	a := e.Group("/admin")
 	a.POST("", h.CreateAdmin)
 	a.GET("", h.GetSignUpAdmin)
 	a.POST("/login", h.LoginAdmin)
 	a.GET("/login", h.GetLoginAdmin)
 
-	e.Use(authMiddleware)
-
 	e.Logger.SetLevel(log.DEBUG)
 	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
 }
 
 func authMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	logger, _ := zap.NewProduction()
+	sugar := logger.Sugar()
 	return func(c echo.Context) error {
 		sess, err := session.Get(SessionName, c)
-		c.Logger().Debug(sess, err)
 		if err != nil {
+			sugar.Error(err)
 			return err
 		}
 
 		authenticated := sess.Values["authenticated"] == true
-		requestIsToLogin := c.Request().URL.Path == "/login"
-		requestMethodIsGet := c.Request().Method == http.MethodGet
-		if !authenticated && !requestIsToLogin && !requestMethodIsGet {
-			c.Logger().Debug(sess, err)
-			c.Logger().Info("redirecting to login page...")
-			return c.Redirect(http.StatusSeeOther, "/login")
+		path := c.Request().URL.Path
+		requestIsToLogin := path == "/login" || path == "/admin"
+		// requestMethodIsGet := c.Request().Method == http.MethodGet
+		if authenticated || requestIsToLogin {
+			return next(c)
 		}
 
-		c.Logger().Debug(sess, err)
+		sugar.Info("redirecting to login page...")
+		c.Response().Header().Set("HX-Replace-Url", "/login")
+		if err := components.Index(components.Login()).Render(c.Request().Context(), c.Response().Writer); err != nil {
+			sugar.Error(err)
+			return err
+		}
 
-		return next(c)
+		return nil
 	}
 }
 
 func restrictedMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	logger, _ := zap.NewProduction()
+	sugar := logger.Sugar()
 	return func(c echo.Context) error {
 		sess, err := session.Get(SessionName, c)
-		c.Logger().Debug(sess, err)
+		sugar.Debugw("values", sess, err)
 		if err != nil {
 			return err
 		}

@@ -5,6 +5,7 @@ import (
 
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
+	"github.com/murasakiwano/fitcon/components"
 	"go.uber.org/zap"
 )
 
@@ -30,10 +31,10 @@ func (h *Handler) SignUp(c echo.Context) error {
 	fc, err := h.db.GetFitConner(id)
 	if err != nil {
 		h.log.Errorw("Error getting fitconner", zap.Error(err))
-		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"error":   err,
-			"message": "Erro ao cadastrar usuário " + id + ".",
-		})
+		return h.renderComponent(
+			components.Index(components.UserNotFound(id)),
+			c,
+		)
 	}
 
 	if !fc.PasswordEmpty() {
