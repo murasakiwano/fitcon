@@ -13,7 +13,11 @@ templ FormInput(forInput, label, inputType, id, name, placeholder string, requir
 }
 
 templ Button(title string) {
-	<div><button type="submit" class="rounded-md bg-orange-600 px-4 py-2 text-white hover:bg-orange-700">{ title }</button></div>
+	<div>
+		<button type="submit" class="rounded-md bg-orange-600 px-4 py-2 text-white hover:bg-orange-700">
+			{ title }
+		</button>
+	</div>
 }
 
 templ Container(comp templ.Component) {

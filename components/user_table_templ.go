@@ -165,15 +165,16 @@ func UserTable(fc fitconner.FitConner) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</tr></tbody></table></div>")
+		_, err = templBuffer.WriteString("</tr></tbody></table></div><div><button type=\"button\" hx-get=\"/\" hx-target=\".container\" class=\"rounded-md bg-orange-600 px-4 py-2 text-white hover:bg-orange-700\">")
 		if err != nil {
 			return err
 		}
-		err = Button("← Voltar ").Render(ctx, templBuffer)
+		var_3 := `← Voltar`
+		_, err = templBuffer.WriteString(var_3)
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</div>")
+		_, err = templBuffer.WriteString("</button></div></div>")
 		if err != nil {
 			return err
 		}
@@ -192,17 +193,17 @@ func bodyCell(text string) templ.Component {
 			defer templ.ReleaseBuffer(templBuffer)
 		}
 		ctx = templ.InitializeContext(ctx)
-		var_3 := templ.GetChildren(ctx)
-		if var_3 == nil {
-			var_3 = templ.NopComponent
+		var_4 := templ.GetChildren(ctx)
+		if var_4 == nil {
+			var_4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, err = templBuffer.WriteString("<td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm text-gray-500 dark:text-gray-300\">")
 		if err != nil {
 			return err
 		}
-		var var_4 string = text
-		_, err = templBuffer.WriteString(templ.EscapeString(var_4))
+		var var_5 string = text
+		_, err = templBuffer.WriteString(templ.EscapeString(var_5))
 		if err != nil {
 			return err
 		}
@@ -225,17 +226,17 @@ func titleCell(text string) templ.Component {
 			defer templ.ReleaseBuffer(templBuffer)
 		}
 		ctx = templ.InitializeContext(ctx)
-		var_5 := templ.GetChildren(ctx)
-		if var_5 == nil {
-			var_5 = templ.NopComponent
+		var_6 := templ.GetChildren(ctx)
+		if var_6 == nil {
+			var_6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, err = templBuffer.WriteString("<td class=\"whitespace-nowrap px-6 py-4\"><div class=\"text-sm font-medium text-gray-900 dark:text-gray-50\">")
 		if err != nil {
 			return err
 		}
-		var var_6 string = text
-		_, err = templBuffer.WriteString(templ.EscapeString(var_6))
+		var var_7 string = text
+		_, err = templBuffer.WriteString(templ.EscapeString(var_7))
 		if err != nil {
 			return err
 		}
@@ -258,22 +259,22 @@ func goalTitleCell(num string) templ.Component {
 			defer templ.ReleaseBuffer(templBuffer)
 		}
 		ctx = templ.InitializeContext(ctx)
-		var_7 := templ.GetChildren(ctx)
-		if var_7 == nil {
-			var_7 = templ.NopComponent
+		var_8 := templ.GetChildren(ctx)
+		if var_8 == nil {
+			var_8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, err = templBuffer.WriteString("<td class=\"whitespace-nowrap px-6 py-4\" rowspan=\"2\"><div class=\"text-sm font-medium text-gray-900 dark:text-gray-50\">")
 		if err != nil {
 			return err
 		}
-		var_8 := `Meta `
-		_, err = templBuffer.WriteString(var_8)
+		var_9 := `Meta `
+		_, err = templBuffer.WriteString(var_9)
 		if err != nil {
 			return err
 		}
-		var var_9 string = num
-		_, err = templBuffer.WriteString(templ.EscapeString(var_9))
+		var var_10 string = num
+		_, err = templBuffer.WriteString(templ.EscapeString(var_10))
 		if err != nil {
 			return err
 		}

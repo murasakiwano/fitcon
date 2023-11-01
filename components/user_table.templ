@@ -30,14 +30,14 @@ templ UserTable(fc fitconner.FitConner) {
 		<td></td>
 		@bodyCell(fc.TeamName)
 	</tr>
-	<tr>@goalTitleCell("1") @bodyCell("Percentual de Gordura") @bodyCell(fc.Goal1FatPercentage)</tr>
-	<tr>@bodyCell("Massa Magra") @bodyCell(fc.Goal1LeanMass)</tr>
-	<tr>@goalTitleCell("2") @bodyCell("Gordura Visceral") @bodyCell(fc.Goal2VisceralFat)</tr>
-	<tr>@bodyCell("Gordura Corporal") @bodyCell(fc.Goal2FatPercentage)</tr>
-	<tr>@bodyCell("Massa Magra") @bodyCell(fc.Goal2LeanMass)</tr>
+	<tr>@goalTitleCell("1")@bodyCell("Percentual de Gordura")@bodyCell(fc.Goal1FatPercentage)</tr>
+	<tr>@bodyCell("Massa Magra")@bodyCell(fc.Goal1LeanMass)</tr>
+	<tr>@goalTitleCell("2")@bodyCell("Gordura Visceral")@bodyCell(fc.Goal2VisceralFat)</tr>
+	<tr>@bodyCell("Gordura Corporal")@bodyCell(fc.Goal2FatPercentage)</tr>
+	<tr>@bodyCell("Massa Magra")@bodyCell(fc.Goal2LeanMass)</tr>
 </tbody></table>
 		</div>
-		@Button("← Voltar ")
+		<div><button type="button" hx-get="/" hx-target=".container" class="rounded-md bg-orange-600 px-4 py-2 text-white hover:bg-orange-700">← Voltar</button></div>
 	</div>
 }
 
