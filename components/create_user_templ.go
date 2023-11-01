@@ -50,11 +50,7 @@ func card() templ.Component {
 		if err != nil {
 			return err
 		}
-		err = body().Render(ctx, templBuffer)
-		if err != nil {
-			return err
-		}
-		err = Button("Criar Participante").Render(ctx, templBuffer)
+		err = body("POST").Render(ctx, templBuffer)
 		if err != nil {
 			return err
 		}
@@ -98,7 +94,7 @@ func header() templ.Component {
 	})
 }
 
-func body() templ.Component {
+func body(method string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
 		templBuffer, templIsBuffer := w.(*bytes.Buffer)
 		if !templIsBuffer {
@@ -111,6 +107,18 @@ func body() templ.Component {
 			var_5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
+		_, err = templBuffer.WriteString("<form id=\"createUser\" action=\"/admin/users\" method=\"")
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString(templ.EscapeString(method))
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("\">")
+		if err != nil {
+			return err
+		}
 		err = FormInput("fullName", "Nome Completo", "text", "fullName", "fullName", "John Doe", true).Render(ctx, templBuffer)
 		if err != nil {
 			return err
@@ -144,6 +152,66 @@ func body() templ.Component {
 			return err
 		}
 		err = FormInput("teamNumber", "Número da Equipe", "text", "teamNumber", "teamNumber", "Número da Equipe", true).Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		err = Button("Criar Participante").Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</form>")
+		if err != nil {
+			return err
+		}
+		if !templIsBuffer {
+			_, err = templBuffer.WriteTo(w)
+		}
+		return err
+	})
+}
+
+func UpdateUser() templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+		templBuffer, templIsBuffer := w.(*bytes.Buffer)
+		if !templIsBuffer {
+			templBuffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templBuffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		var_6 := templ.GetChildren(ctx)
+		if var_6 == nil {
+			var_6 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		err = Container(updateUserCard()).Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		if !templIsBuffer {
+			_, err = templBuffer.WriteTo(w)
+		}
+		return err
+	})
+}
+
+func updateUserCard() templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+		templBuffer, templIsBuffer := w.(*bytes.Buffer)
+		if !templIsBuffer {
+			templBuffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templBuffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		var_7 := templ.GetChildren(ctx)
+		if var_7 == nil {
+			var_7 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		err = header().Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		err = body("PUT").Render(ctx, templBuffer)
 		if err != nil {
 			return err
 		}

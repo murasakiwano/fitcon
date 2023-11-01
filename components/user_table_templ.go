@@ -24,7 +24,7 @@ func UserTable(fc fitconner.FitConner) templ.Component {
 			var_1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, err = templBuffer.WriteString("<div id=\"card\" class=\"container mx-auto dark:bg-gray-700\"><div class=\"mx-auto max-w-xl overflow-hidden rounded-lg bg-white shadow-xl dark:bg-gray-700\"><div class=\"flex items-center justify-between p-6\"><h1 class=\"text-xl font-semibold text-gray-700 dark:text-gray-100\">")
+		_, err = templBuffer.WriteString("<div class=\"mx-auto max-w-xl overflow-hidden rounded-lg bg-white shadow-xl dark:bg-gray-700\"><div class=\"flex items-center justify-between p-6\"><h1 class=\"text-xl font-semibold text-gray-700 dark:text-gray-100\">")
 		if err != nil {
 			return err
 		}
@@ -165,7 +165,7 @@ func UserTable(fc fitconner.FitConner) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</tr></tbody></table></div><div><button type=\"button\" hx-get=\"/\" hx-target=\".container\" class=\"rounded-md bg-orange-600 px-4 py-2 text-white hover:bg-orange-700\">")
+		_, err = templBuffer.WriteString("</tr></tbody></table><div class=\"p-2\"><a href=\"/\" hx-target=\"card\" class=\"text-orange-600 hover:underline\">")
 		if err != nil {
 			return err
 		}
@@ -174,7 +174,7 @@ func UserTable(fc fitconner.FitConner) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</button></div></div>")
+		_, err = templBuffer.WriteString("</a></div></div>")
 		if err != nil {
 			return err
 		}
