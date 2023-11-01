@@ -16,6 +16,11 @@ func (h *Handler) GetCreate(c echo.Context) error {
 	return h.renderComponent(comp, c)
 }
 
+func (h *Handler) GetUpdateUser(c echo.Context) error {
+	comp := components.Index(components.UpdateUser())
+	return h.renderComponent(comp, c)
+}
+
 func (h *Handler) GetSignUp(c echo.Context) error {
 	comp := components.Index(components.SignUp())
 	return h.renderComponent(comp, c)

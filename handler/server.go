@@ -61,8 +61,6 @@ func (h *Handler) Serve() {
 
 	r := e.Group("/restricted")
 	r.GET("/users", h.GetUser)
-	r.PUT("/users", h.UpdateUser)
-	r.POST("/users", h.CreateUser)
 	r.Use(restrictedMiddleware)
 
 	a := e.Group("/admin")
@@ -70,6 +68,10 @@ func (h *Handler) Serve() {
 	a.GET("", h.GetSignUpAdmin)
 	a.POST("/login", h.LoginAdmin)
 	a.GET("/login", h.GetLoginAdmin)
+	a.GET("/users", h.GetCreate)
+	a.GET("/update_user", h.GetUpdateUser)
+	a.PUT("/users", h.UpdateUser)
+	a.POST("/users", h.CreateUser)
 
 	e.Logger.SetLevel(log.DEBUG)
 	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
