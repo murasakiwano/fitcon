@@ -33,7 +33,7 @@ func UserTable(fc fitconner.FitConner) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</h1><img src=\"img/logo.png\" alt=\"Logo\" class=\"h-12 w-auto\"></div><table class=\"min-w-full divide-y divide-gray-200\"><tbody class=\"bg-gray-50 dark:bg-gray-700\"><tr>")
+		_, err = templBuffer.WriteString("</h1><img src=\"/assets/img/logo.png\" alt=\"Logo\" class=\"h-12 w-auto\"></div><table class=\"min-w-full divide-y divide-gray-200\"><tbody class=\"bg-gray-50 dark:bg-gray-700\"><tr>")
 		if err != nil {
 			return err
 		}

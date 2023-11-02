@@ -5,38 +5,38 @@ import "github.com/murasakiwano/fitcon/internal/fitconner"
 templ UserTable(fc fitconner.FitConner) {
 	<div class="mx-auto max-w-xl overflow-hidden rounded-lg bg-white shadow-xl dark:bg-gray-700">
 		<div class="flex items-center justify-between p-6">
-		<h1 class="text-xl font-semibold text-gray-700 dark:text-gray-100">Suas metas no FitCon</h1>
-		<img src="img/logo.png" alt="Logo" class="h-12 w-auto"/>
+			<h1 class="text-xl font-semibold text-gray-700 dark:text-gray-100">Suas metas no FitCon</h1>
+			<img src="/assets/img/logo.png" alt="Logo" class="h-12 w-auto"/>
 		</div>
 		<table class="min-w-full divide-y divide-gray-200"><tbody class="bg-gray-50 dark:bg-gray-700">
-			<tr>
-			@titleCell("Matrícula")
-			<td></td>
-			@bodyCell(fc.ID)
-			</tr>
-			<tr>
-			@titleCell("Equipe")
-			<td></td>
-			@bodyCell(fc.TeamName)
-			</tr>
-			<tr>
-			@titleCell("Nome")
-			<td></td>
-			@bodyCell(fc.Name)
-			</tr>
-			<tr>
-			@titleCell("Equipe")
-			<td></td>
-			@bodyCell(fc.TeamName)
-			</tr>
-			<tr>@goalTitleCell("1")@bodyCell("Percentual de Gordura")@bodyCell(fc.Goal1FatPercentage)</tr>
-			<tr>@bodyCell("Massa Magra")@bodyCell(fc.Goal1LeanMass)</tr>
-			<tr>@goalTitleCell("2")@bodyCell("Gordura Visceral")@bodyCell(fc.Goal2VisceralFat)</tr>
-			<tr>@bodyCell("Gordura Corporal")@bodyCell(fc.Goal2FatPercentage)</tr>
-			<tr>@bodyCell("Massa Magra")@bodyCell(fc.Goal2LeanMass)</tr>
-		</tbody></table>
+	<tr>
+		@titleCell("Matrícula")
+		<td></td>
+		@bodyCell(fc.ID)
+	</tr>
+	<tr>
+		@titleCell("Equipe")
+		<td></td>
+		@bodyCell(fc.TeamName)
+	</tr>
+	<tr>
+		@titleCell("Nome")
+		<td></td>
+		@bodyCell(fc.Name)
+	</tr>
+	<tr>
+		@titleCell("Equipe")
+		<td></td>
+		@bodyCell(fc.TeamName)
+	</tr>
+	<tr>@goalTitleCell("1")@bodyCell("Percentual de Gordura")@bodyCell(fc.Goal1FatPercentage)</tr>
+	<tr>@bodyCell("Massa Magra")@bodyCell(fc.Goal1LeanMass)</tr>
+	<tr>@goalTitleCell("2")@bodyCell("Gordura Visceral")@bodyCell(fc.Goal2VisceralFat)</tr>
+	<tr>@bodyCell("Gordura Corporal")@bodyCell(fc.Goal2FatPercentage)</tr>
+	<tr>@bodyCell("Massa Magra")@bodyCell(fc.Goal2LeanMass)</tr>
+</tbody></table>
 		<div class="p-2"><a href="/" hx-target="card" class="text-orange-600 hover:underline">← Voltar</a></div>
-		</div>
+	</div>
 }
 
 templ bodyCell(text string) {

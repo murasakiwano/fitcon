@@ -2,12 +2,12 @@ package components
 
 templ Index(comp templ.Component) {
 	<!DOCTYPE html>
-	<html lang="en">
+	<html lang="pt-br">
 		<head>
 			<title>Metas FitCon</title>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
-			<link href="/assets/output.css" rel="stylesheet"/>
+			<link href="/assets/style.css" rel="stylesheet"/>
 			<script src="/assets/js/htmx.min.js"></script>
 		</head>
 		<body class="bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-100">
@@ -16,9 +16,6 @@ templ Index(comp templ.Component) {
 			</div>
 			{! comp }
 		</body>
-		<script>
-			htmx.logAll();
-		</script>
 	</html>
 }
 

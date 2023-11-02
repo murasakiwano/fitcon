@@ -22,7 +22,7 @@ func Index(comp templ.Component) templ.Component {
 			var_1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, err = templBuffer.WriteString("<!doctype html><html lang=\"en\"><head><title>")
+		_, err = templBuffer.WriteString("<!doctype html><html lang=\"pt-br\"><head><title>")
 		if err != nil {
 			return err
 		}
@@ -31,7 +31,7 @@ func Index(comp templ.Component) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"/assets/output.css\" rel=\"stylesheet\"><script src=\"/assets/js/htmx.min.js\">")
+		_, err = templBuffer.WriteString("</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"/assets/style.css\" rel=\"stylesheet\"><script src=\"/assets/js/htmx.min.js\">")
 		if err != nil {
 			return err
 		}
@@ -57,18 +57,7 @@ func Index(comp templ.Component) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</body><script>")
-		if err != nil {
-			return err
-		}
-		var_5 := `
-			htmx.logAll();
-		`
-		_, err = templBuffer.WriteString(var_5)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</script></html>")
+		_, err = templBuffer.WriteString("</body></html>")
 		if err != nil {
 			return err
 		}
