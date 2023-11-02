@@ -12,10 +12,8 @@ RUN go build -v -o fitcon .
 FROM debian:bookworm-slim
 
 # Copy the app binary from the builder to the production image
-COPY --from=builder /go/src/github.com/murasakiwano/fitcon/fitcon /usr/local/bin/fitcon
+COPY --from=builder /go/src/github.com/murasakiwano/fitcon/fitcon /fitcon
 COPY --from=builder /go/src/github.com/murasakiwano/fitcon/assets /assets
-COPY --from=builder /go/src/github.com/murasakiwano/fitcon/css /css
-COPY --from=builder /go/src/github.com/murasakiwano/fitcon/img /img
 
 # Run the app when the vm starts
-CMD ["fitcon"]
+CMD ["/fitcon"]
