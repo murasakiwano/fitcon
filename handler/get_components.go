@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/a-h/templ"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/murasakiwano/fitcon/components"
 )
@@ -27,6 +28,15 @@ func (h *Handler) GetSignUp(c echo.Context) error {
 }
 
 func (h *Handler) GetLogin(c echo.Context) error {
+	sess, err := session.Get(SessionName, c)
+	if err != nil {
+		return echo.ErrInternalServerError
+	}
+
+	if sess.Values["authenticated"] == true {
+		c.Request().Header.Set("HX-Replace-Url", "/")
+		return h.GetIndex(c)
+	}
 	comp := components.Index(components.Login())
 	return h.renderComponent(comp, c)
 }

@@ -1,9 +1,7 @@
 package handler
 
 import (
-	"net/http"
 	"os"
-	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/murasakiwano/fitcon/internal/auth"
@@ -24,24 +22,27 @@ func (h *Handler) LoginAdmin(c echo.Context) error {
 		return echo.ErrUnauthorized
 	}
 
+	adm, err := h.db.GetAdmin(params.Name)
+	if err != nil {
+		h.log.Error("Admin does not exist", zap.String("name", params.Name))
+		return echo.ErrUnauthorized
+	}
+
+	if err := auth.CheckPasswordHash(params.Password, adm.HashedPassword); err != nil {
+		h.log.Error("Password does not match")
+		return echo.ErrUnauthorized
+	}
+
 	sess, err := h.createSession(params.Name, c)
 	if err != nil {
 		h.log.Errorw("error occurred when creating session", zap.Error(err))
 		return echo.ErrInternalServerError
 	}
 
-	token, err := auth.MakeJWT(params.Name, h.jwtSecret, time.Duration(60*60)*time.Second, "fitcon", true)
-	if err != nil {
-		return c.String(http.StatusInternalServerError, "Couldn't create access token")
-	}
-
 	sess.Values["admin"] = true
-	sess.Values["token"] = token
+	sess.Values["user_name"] = params.Name
 	sess.Values["authenticated"] = true
 	sess.Save(c.Request(), c.Response().Writer)
 
-	return c.JSON(http.StatusOK, echo.Map{
-		"token": token,
-		"name":  params.Name,
-	})
+	return h.GetIndex(c)
 }

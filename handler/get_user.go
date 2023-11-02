@@ -12,8 +12,7 @@ import (
 func (h *Handler) GetUser(c echo.Context) error {
 	h.log.Debugw("Request",
 		zap.Any("path", c.Request().URL.Path),
-		zap.Any("context", c.Request().Context()),
-		zap.Any("body", c.Request().Body),
+		zap.Any("params", c.QueryParams()),
 	)
 	id := c.QueryParam("matricula")
 	h.log.Debugw("Got", zap.String("matricula", id))

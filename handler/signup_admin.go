@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
@@ -46,22 +45,13 @@ func (h *Handler) CreateAdmin(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Couldn't create admin")
 	}
 
-	token, err := auth.MakeJWT(params.Name, h.jwtSecret, time.Duration(60*60)*time.Second, "fitcon", true)
-	if err != nil {
-		return c.String(http.StatusInternalServerError, "Couldn't create access token")
-	}
-
 	sess, _ := session.Get(SessionName, c)
 	sess.Options = &DefaultOptions
 
-	sess.Values["token"] = token
+	sess.Values["admin"] = true
+	sess.Values["user_name"] = params.Name
 	sess.Values["authenticated"] = true
 	sess.Save(c.Request(), c.Response().Writer)
 
-	c.Redirect(http.StatusSeeOther, "/")
-	return c.JSON(http.StatusCreated, echo.Map{
-		"token":   token,
-		"id":      params.Name,
-		"message": "successfully created user",
-	})
+	return h.GetIndex(c)
 }

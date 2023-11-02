@@ -54,9 +54,9 @@ func (h *Handler) SignUp(c echo.Context) error {
 	}
 
 	sess.Values["authenticated"] = true
+	sess.Values["admin"] = false
+	sess.Values["user_id"] = fc.ID
 	sess.Save(c.Request(), c.Response().Writer)
 
-	return c.JSON(http.StatusCreated, echo.Map{
-		"id": id,
-	})
+	return h.GetIndex(c)
 }

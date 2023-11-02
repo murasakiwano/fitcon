@@ -2,6 +2,7 @@ package handler
 
 import (
 	"os"
+	"strings"
 
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
@@ -9,7 +10,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	"github.com/murasakiwano/fitcon/components"
-	"github.com/murasakiwano/fitcon/internal/auth"
 	"go.uber.org/zap"
 )
 
@@ -49,7 +49,6 @@ func (h *Handler) Serve() {
 	}))
 
 	e.Static("/assets", "assets")
-	e.Static("/img", "img")
 
 	e.File("/favicon.ico", "favicon.ico")
 
@@ -60,8 +59,8 @@ func (h *Handler) Serve() {
 	e.POST("/login", h.Login)
 
 	r := e.Group("/restricted")
-	r.GET("/users", h.GetUser)
 	r.Use(restrictedMiddleware)
+	r.GET("/users", h.GetUser)
 
 	a := e.Group("/admin")
 	a.POST("", h.CreateAdmin)
@@ -78,9 +77,10 @@ func (h *Handler) Serve() {
 }
 
 func authMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
-	logger, _ := zap.NewProduction()
+	logger, _ := zap.NewDevelopment()
 	sugar := logger.Sugar()
 	return func(c echo.Context) error {
+		sugar.Debugw("Inside authMiddleware")
 		sess, err := session.Get(SessionName, c)
 		if err != nil {
 			sugar.Error(err)
@@ -89,9 +89,12 @@ func authMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 		authenticated := sess.Values["authenticated"] == true
 		path := c.Request().URL.Path
-		requestIsToLogin := path == "/login" || path == "/admin"
+		bypassRequest := path == "/login" ||
+			strings.Contains(path, "/admin") ||
+			path == "/signup" ||
+			strings.Contains(path, "assets")
 		// requestMethodIsGet := c.Request().Method == http.MethodGet
-		if authenticated || requestIsToLogin {
+		if authenticated || bypassRequest {
 			return next(c)
 		}
 
@@ -107,27 +110,23 @@ func authMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 }
 
 func restrictedMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
-	logger, _ := zap.NewProduction()
-	sugar := logger.Sugar()
 	return func(c echo.Context) error {
 		sess, err := session.Get(SessionName, c)
-		sugar.Debugw("values", sess, err)
+		c.Logger().Debugf("got session: %+v", sess)
 		if err != nil {
 			return err
 		}
 
-		id := c.QueryParam("id")
-		tokenString := sess.Values["token"]
-		jwtInfo, err := auth.ValidateJWT(
-			tokenString.(string),
-			os.Getenv("JWT_SECRET"),
-		)
-		if err != nil {
-			return err
-		}
-
-		authorized := jwtInfo.Issuer == "fitcon" &&
-			(jwtInfo.Subject == id || jwtInfo.Admin)
+		id := c.QueryParam("matricula")
+		admin := sess.Values["admin"] == true
+		validID := sess.Values["user_id"] == id
+		authorized := admin || validID
+		c.Logger().Debugj(log.JSON{
+			"admin":   admin,
+			"validID": validID,
+			"user_id": sess.Values["user_id"],
+			"id":      id,
+		})
 		if !authorized {
 			return echo.ErrForbidden
 		}
