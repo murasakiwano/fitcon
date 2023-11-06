@@ -33,7 +33,7 @@ func UserTable(fc fitconner.FitConner) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</h1><img src=\"/assets/img/logo.png\" alt=\"Logo\" class=\"h-12 w-auto\"></div><table class=\"min-w-full divide-y divide-gray-200\"><tbody class=\"bg-gray-50 dark:bg-gray-700\"><tr>")
+		_, err = templBuffer.WriteString("</h1><img src=\"/assets/img/logo.png\" alt=\"Logo\" class=\"h-12 w-auto\"></div><table class=\"min-w-full divide-y divide-gray-200\"><tbody class=\"bg-gray-50 dark:bg-gray-700 border-gray-400 border-t\"><tr>")
 		if err != nil {
 			return err
 		}
@@ -81,27 +81,11 @@ func UserTable(fc fitconner.FitConner) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</tr><tr>")
+		_, err = templBuffer.WriteString("</tr><tr class=\"border-gray-400 border-t\">")
 		if err != nil {
 			return err
 		}
-		err = titleCell("Equipe").Render(ctx, templBuffer)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("<td></td>")
-		if err != nil {
-			return err
-		}
-		err = bodyCell(fc.TeamName).Render(ctx, templBuffer)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</tr><tr>")
-		if err != nil {
-			return err
-		}
-		err = goalTitleCell("1").Render(ctx, templBuffer)
+		err = goalTitleCell("1", "3").Render(ctx, templBuffer)
 		if err != nil {
 			return err
 		}
@@ -125,11 +109,23 @@ func UserTable(fc fitconner.FitConner) templ.Component {
 		if err != nil {
 			return err
 		}
+		_, err = templBuffer.WriteString("</tr><tr class=\"border-gray-400 border-b\">")
+		if err != nil {
+			return err
+		}
+		err = bodyCell("Peso").Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		err = bodyCell(fc.Goal1Weight).Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
 		_, err = templBuffer.WriteString("</tr><tr>")
 		if err != nil {
 			return err
 		}
-		err = goalTitleCell("2").Render(ctx, templBuffer)
+		err = goalTitleCell("2", "4").Render(ctx, templBuffer)
 		if err != nil {
 			return err
 		}
@@ -162,6 +158,18 @@ func UserTable(fc fitconner.FitConner) templ.Component {
 			return err
 		}
 		err = bodyCell(fc.Goal2LeanMass).Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</tr><tr class=\"border-gray-400 border-b\">")
+		if err != nil {
+			return err
+		}
+		err = bodyCell("Peso").Render(ctx, templBuffer)
+		if err != nil {
+			return err
+		}
+		err = bodyCell(fc.Goal2Weight).Render(ctx, templBuffer)
 		if err != nil {
 			return err
 		}
@@ -251,7 +259,7 @@ func titleCell(text string) templ.Component {
 	})
 }
 
-func goalTitleCell(num string) templ.Component {
+func goalTitleCell(num, rowspan string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
 		templBuffer, templIsBuffer := w.(*bytes.Buffer)
 		if !templIsBuffer {
@@ -264,7 +272,15 @@ func goalTitleCell(num string) templ.Component {
 			var_8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, err = templBuffer.WriteString("<td class=\"whitespace-nowrap px-6 py-4\" rowspan=\"2\"><div class=\"text-sm font-medium text-gray-900 dark:text-gray-50\">")
+		_, err = templBuffer.WriteString("<td class=\"whitespace-nowrap px-6 py-4 border-gray-400 border-b\" rowspan=\"")
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString(templ.EscapeString(rowspan))
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("\"><div class=\"text-sm font-medium text-gray-900 dark:text-gray-50\">")
 		if err != nil {
 			return err
 		}

@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-	"net/url"
+	"log"
+	"os"
 	"strconv"
 
+	"github.com/murasakiwano/fitcon/internal/db"
 	"github.com/murasakiwano/fitcon/internal/fitconner"
 	"github.com/xuri/excelize/v2"
 	"go.uber.org/zap"
@@ -54,48 +55,47 @@ func unpackIntoFitConner(row []string) fitconner.FitConner {
 		panic(err)
 	}
 
-	if len(row) < 9 {
-		for i := 9 - len(row); i <= 9; i++ {
-			row = append(row, "")
+	if len(row) < 11 {
+		for len(row) < 11 {
+			row = append(row, "*")
 		}
 	}
 
-	return fitconner.FitConner{
+	log.Printf("%#+v", row)
+	log.Printf("=============ROWLEN=============\n%d\n", len(row))
+	fc := fitconner.FitConner{
 		TeamNumber:         teamNumber,
 		TeamName:           row[1],
 		ID:                 row[2],
 		Name:               row[3],
 		Goal1FatPercentage: row[4],
-		Goal1LeanMass:      row[5],
-		Goal2VisceralFat:   row[6],
-		Goal2FatPercentage: row[7],
-		Goal2LeanMass:      row[8],
+		Goal1Weight:        row[5],
+		Goal1LeanMass:      row[6],
+		Goal2VisceralFat:   row[7],
+		Goal2Weight:        row[8],
+		Goal2FatPercentage: row[9],
+		Goal2LeanMass:      row[10],
 	}
+	log.Printf("FitConner: %+v", fc)
+
+	return fc
 }
 
 func populateDB(fcs []fitconner.FitConner) error {
 	logger, _ := zap.NewDevelopment()
 	sugar := logger.Sugar()
-
-	for _, fitConner := range fcs {
-		sugar.Infow("creating fitConner...", zap.Object("fitConner", fitConner))
-		resp, err := http.PostForm("https://metas-fitcon.fly.dev/users", url.Values{
-			"teamName":           {fitConner.TeamName},
-			"name":               {fitConner.Name},
-			"matricula":          {fitConner.ID},
-			"goal1FatPercentage": {fitConner.Goal1FatPercentage},
-			"goal1LeanMass":      {fitConner.Goal1LeanMass},
-			"goal2FatPercentage": {fitConner.Goal2FatPercentage},
-			"goal2LeanMass":      {fitConner.Goal2LeanMass},
-			"goal2VisceralFat":   {fitConner.Goal2VisceralFat},
-		})
-		if err != nil {
-			sugar.Errorw("error creating fitConner", zap.Error(err))
-			return err
-		}
-
-		sugar.Infow("successfully created fitConner", zap.Object("fitConner", fitConner), zap.Any("response", resp))
+	os.Setenv("DATABASE_FILE", "./fitcon.db")
+	db, err := db.New(sugar)
+	if err != nil {
+		sugar.Error("Error ocurred creating database", zap.Error(err))
+		return err
 	}
+
+	sugar.Infow("creating fitConners...")
+	db.BatchInsert(fcs)
+	sugar.Infow("successfully created fitConners")
+
+	db.GetAllFitConners()
 
 	return nil
 }

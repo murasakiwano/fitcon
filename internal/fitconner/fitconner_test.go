@@ -10,7 +10,7 @@ import (
 func TestPasswordIsBeingHashed(t *testing.T) {
 	password := "test-password1"
 
-	fc, err := New("C123456", "Joca", password, "BFIGHT", "", "", "", "", "", 1)
+	fc, err := New("C123456", "Joca", password, "BFIGHT", "", "", "", "", "", "", "", 1)
 	if err != nil {
 		t.Fatalf("Error creating FitConner: %s", err)
 	}

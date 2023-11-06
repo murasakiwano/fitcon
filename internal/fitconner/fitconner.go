@@ -12,9 +12,11 @@ type FitConner struct {
 	HashedPassword     string `json:"hashed_password"  form:"hashed_password" db:"hashed_password"`
 	Goal1FatPercentage string `json:"goal1FatPercentage"  form:"goal1FatPercentage" db:"goal1_fat_percentage"`
 	Goal1LeanMass      string `json:"goal1LeanMass"  form:"goal1LeanMass" db:"goal1_lean_mass"`
+	Goal1Weight        string `json:"goal1Weight" form:"goal1Weight" db:"goal1_weight"`
 	Goal2FatPercentage string `json:"goal2FatPercentage"  form:"goal2FatPercentage" db:"goal2_fat_percentage"`
 	Goal2LeanMass      string `json:"goal2LeanMass"  form:"goal2LeanMass" db:"goal2_lean_mass"`
 	Goal2VisceralFat   string `json:"goal2VisceralFat"  form:"goal2VisceralFat" db:"goal2_visceral_fat"`
+	Goal2Weight        string `json:"goal2Weight" form:"goal2Weight" db:"goal2_weight"`
 	TeamName           string `json:"teamName"  form:"teamName" db:"team_name"`
 	TeamNumber         int    `json:"teamNumber"  form:"teamNumber" db:"team_number"`
 }
@@ -31,9 +33,11 @@ func New(
 	teamName,
 	g1FatPercentage,
 	g1LeanMass,
+	g1Weight,
 	g2FatPercentage,
 	g2LeanMass,
-	g2VisceralFat string,
+	g2VisceralFat,
+	g2Weight string,
 	teamNumber int,
 ) (*FitConner, error) {
 	hash, err := auth.HashPassword(password)
@@ -41,8 +45,8 @@ func New(
 		return nil, err
 	}
 
-	goals1 := buildGoals(g1FatPercentage, g1LeanMass, "")
-	goals2 := buildGoals(g2FatPercentage, g2LeanMass, g2VisceralFat)
+	goals1 := buildGoals(g1FatPercentage, g1LeanMass, "", g1Weight)
+	goals2 := buildGoals(g2FatPercentage, g2LeanMass, g2VisceralFat, g2Weight)
 	return &FitConner{
 		ID:                 id,
 		Name:               name,
@@ -51,18 +55,21 @@ func New(
 		TeamNumber:         teamNumber,
 		Goal1FatPercentage: goals1["fatPercentage"],
 		Goal1LeanMass:      goals1["leanMass"],
+		Goal1Weight:        goals1["weight"],
 		Goal2FatPercentage: goals2["fatPercentage"],
 		Goal2LeanMass:      goals2["leanMass"],
 		Goal2VisceralFat:   goals2["visceralFat"],
+		Goal2Weight:        goals2["weight"],
 	}, nil
 }
 
-func buildGoals(fatPercentage string, leanMass string, visceralFat string) map[string]string {
-	var fp, lm, vf string
+func buildGoals(fatPercentage string, leanMass string, visceralFat string, weight string) map[string]string {
+	var fp, lm, vf, w string
 
 	fp = fatPercentage
 	lm = leanMass
 	vf = visceralFat
+	w = weight
 
 	if fatPercentage == "" {
 		fp = "-"
@@ -73,11 +80,15 @@ func buildGoals(fatPercentage string, leanMass string, visceralFat string) map[s
 	if visceralFat == "" {
 		vf = "-"
 	}
+	if w == "" {
+		vf = "-"
+	}
 
 	return map[string]string{
 		"fatPercentage": fp,
 		"leanMass":      lm,
 		"visceralFat":   vf,
+		"weight":        w,
 	}
 }
 
@@ -90,9 +101,11 @@ func (fc FitConner) MarshalLogObject(oe zapcore.ObjectEncoder) error {
 	oe.AddString("name", fc.Name)
 	oe.AddString("goal1FatPercentage", fc.Goal1FatPercentage)
 	oe.AddString("goal1LeanMass", fc.Goal1LeanMass)
+	oe.AddString("goal1Weight", fc.Goal1Weight)
 	oe.AddString("goal2FatPercentage", fc.Goal2FatPercentage)
 	oe.AddString("goal2LeanMass", fc.Goal2LeanMass)
 	oe.AddString("goal2VisceralFat", fc.Goal2VisceralFat)
+	oe.AddString("goal2Weight", fc.Goal2Weight)
 
 	return nil
 }

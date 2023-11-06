@@ -17,9 +17,11 @@ create table if not exists %s (
 	team_number integer not null,
 	goal1_fat_percentage text default '-',
 	goal1_lean_mass text default '-',
+	goal1_weight text default '-',
 	goal2_fat_percentage text default '-',
 	goal2_lean_mass text default '-',
-	goal2_visceral_fat text default '-'
+	goal2_visceral_fat text default '-',
+	goal2_weight text default '-'
 );`, FitConnersTable)
 	fitconnerDrop        = fmt.Sprintf("drop table %s;", FitConnersTable)
 	getQuery             = fmt.Sprintf("SELECT * FROM %s WHERE id=$1", FitConnersTable)
@@ -32,9 +34,11 @@ INSERT INTO %s (
 	team_number,
 	goal1_fat_percentage,
 	goal1_lean_mass,
+	goal1_weight,
 	goal2_fat_percentage,
 	goal2_lean_mass,
-	goal2_visceral_fat
+	goal2_visceral_fat,
+	goal2_weight
 )
 VALUES (
 	:id,
@@ -44,9 +48,11 @@ VALUES (
 	:team_number,
 	:goal1_fat_percentage,
 	:goal1_lean_mass,
+	:goal1_weight,
 	:goal2_fat_percentage,
 	:goal2_lean_mass,
-	:goal2_visceral_fat
+	:goal2_visceral_fat,
+	:goal2_weight
 );`, FitConnersTable)
 )
 

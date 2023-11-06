@@ -60,8 +60,10 @@ func TestInsertFitConner(t *testing.T) {
 		"10",
 		"20",
 		"30",
+		"10",
 		"40",
 		"50",
+		"10",
 		1,
 	)
 	err := db.CreateFitConner(*fc)
@@ -79,7 +81,7 @@ func TestGetFitConner(t *testing.T) {
 		t.Fatalf("Error hashing password: %s", err)
 	}
 	db := DB{db: sldb, logger: logger.Sugar()}
-	db.db.MustExec(insertFitConnerQuery, "C123456", "John Doe", hashedPassword, "Team 1", 1, "10", "20", "30", "40", "50")
+	db.db.MustExec(insertFitConnerQuery, "C123456", "John Doe", hashedPassword, "Team 1", 1, "10", "20", "30", "40", "50", "10", "10")
 
 	_, err = db.GetFitConner("C123456")
 	if err != nil {
@@ -92,9 +94,9 @@ func TestBatchInsertFitConner(t *testing.T) {
 	defer defaultSchema.Drop()
 	db := DB{db: sldb, logger: logger.Sugar()}
 
-	zecaP, _ := fitconner.New("C234142", "Zeca Pagodinho", "test-password1", "Unidos da Brahma", "14", "42", "14", "18", "14", 1)
-	monkeyD, _ := fitconner.New("C234143", "Monkey D. Luffy", "test-password2", "Mugiwara", "4", "2", "1", "8", "1", 1)
-	roroZ, _ := fitconner.New("C234144", "Roronoa Zoro", "test-password3", "Mugiwara", "2", "1", "-2", "-129", "-2", 1)
+	zecaP, _ := fitconner.New("C234142", "Zeca Pagodinho", "test-password1", "Unidos da Brahma", "14", "42", "14", "18", "14", "10", "10", 1)
+	monkeyD, _ := fitconner.New("C234143", "Monkey D. Luffy", "test-password2", "Mugiwara", "4", "2", "1", "8", "1", "2", "1", 1)
+	roroZ, _ := fitconner.New("C234144", "Roronoa Zoro", "test-password3", "Mugiwara", "2", "1", "-2", "-129", "-2", "3", "4", 1)
 	fcs := []fitconner.FitConner{*zecaP, *monkeyD, *roroZ}
 
 	err := db.BatchInsert(fcs)
@@ -134,6 +136,8 @@ func TestUpdateFitConner(t *testing.T) {
 		"30",
 		"40",
 		"50",
+		"10",
+		"10",
 		1,
 	)
 	err := db.CreateFitConner(*fc)
